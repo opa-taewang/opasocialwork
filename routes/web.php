@@ -14,5 +14,40 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('landing.index');
 });
+
+
+Route::get('/dashboard', "OpaVerify\OpaVerifyController@dashboard")->name('dashboard');
+
+
+Route::group(
+    ['as' => 'user.', 'namespace' => 'user', 'middleware' => ['auth']],
+    function () {
+        // auth route goes here
+
+    }
+);
+
+Route::group(
+    ['as' => 'moderator.', 'prefix' => 'moderator', 'namespace' => 'Moderator', 'middleware' => ['auth', 'moderator']],
+    function () {
+        // Moderator routwe here 
+    }
+);
+
+Route::group(
+    ['as' => 'admin.', 'prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['auth', 'moderator', 'admin']],
+    function () {
+        // Admin Route Here
+
+    }
+);
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
