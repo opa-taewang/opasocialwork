@@ -14,8 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('verify_users', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id()->primary();
+            $table->integer('user_id', 11);
+            $table->string('token', 255);
+            $table->timestamp('created_at');
+            $table->timestamp('updated_at');
+            $table->text('otp')->nullable();
         });
     }
 

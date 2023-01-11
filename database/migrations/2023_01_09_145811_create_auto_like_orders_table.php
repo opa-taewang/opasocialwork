@@ -14,8 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('auto_like_orders', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id()->primary();
+            $table->integer('master_id', 10)->unsigned();
+            $table->integer('slave_id', 10)->unsigned();
+            $table->integer('posttime')->default(0);
+            $table->timestamp('created_at');
+            $table->timestamp('updated_at');
         });
     }
 

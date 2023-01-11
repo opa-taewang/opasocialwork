@@ -13,9 +13,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('seo_orders', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::create('seoorders', function (Blueprint $table) {
+            $table->id()->primary();
+            $table->unsignedBigInteger('user_id', 20);
+            $table->unsignedBigInteger('package_id', 20);
+            $table->double('total_amount')->nullable();
+            $table->tinyInteger('dripfeed', 1)->default(0);
+            $table->longText('retextquirements')->nullable();
+            $table->text('extra_services')->nullable();
+            $table->string('runs', 255)->nullable();
+            $table->string('intervals', 255)->nullable();
+            $table->longText('dotextwnloads')->nullable();
+            $table->string('status', 255)->nullable();
+            $table->timestamp('created_at');
+            $table->timestamp('updated_at');
         });
     }
 
@@ -26,6 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('seo_orders');
+        Schema::dropIfExists('seoorders');
     }
 };

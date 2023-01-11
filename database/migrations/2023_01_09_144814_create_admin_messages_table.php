@@ -14,8 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('admin_messages', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id()->primary();
+            $table->integer('admin_id', 10)->unsigned();
+            $table->integer('user_id', 10)->unsigned();
+            $table->string('type')->default('');
+            $table->text('title');
+            $table->text('message');
+            $table->enum('status', ['SENT', 'READ'])->default('SENT');
+            $table->timestamp('created_at');
+            $table->timestamp('updated_at');
         });
     }
 

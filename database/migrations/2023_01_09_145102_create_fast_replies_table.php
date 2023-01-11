@@ -14,8 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('fast_replies', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id()->primary();
+            $table->string('title', 255)->nullable();
+            $table->longText('metextssage')->nullable();
+            $table->dateTime('created_at')->useCurrent()->useCurrentOnUpdate();
+            $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

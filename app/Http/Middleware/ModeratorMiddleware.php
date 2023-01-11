@@ -18,7 +18,7 @@ class ModeratorMiddleware
     public function handle($request, Closure $next)
     {
         if (Auth::check()) {
-            return (Auth::user()->role->id == 2) ? $next($request) : abort('404', "Page Not Found");
+            return (Auth::user()->role === 'MODERATOR') ? $next($request) : abort('404', "Page Not Found");
         }
         return redirect()->route('login');
         // ;

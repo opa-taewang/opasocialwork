@@ -14,8 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('extraservices', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id()->primary();
+            $table->unsignedBigInteger('package_id', 20);
+            $table->text('name')->nullable();
+            $table->string('price', 255)->nullable();
+            $table->timestamp('created_at');
+            $table->timestamp('updated_at');
         });
     }
 
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('extra_services');
+        Schema::dropIfExists('extraservices');
     }
 };

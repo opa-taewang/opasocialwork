@@ -14,8 +14,14 @@ return new class extends Migration
     public function up()
     {
         Schema::create('api_response_logs', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id()->primary();
+            $table->integer('order_id', 10)->unsigned();
+            $table->integer('api_id', 10)->unsigned();
+            $table->text('response');
+            $table->timestamp('created_at');
+            $table->timestamp('updated_at');
+
+            $table->foreign('api_id')->references('id')->on('apis');
         });
     }
 

@@ -14,16 +14,16 @@ return new class extends Migration
     public function up()
     {
         Schema::create('activity_log', function (Blueprint $table) {
-            $table->id();
-            $table->string('log_name', '255')->nullable();;
-            $table->string('description', '255');
-            $table->bigInteger('subject_id', '20')->nullable();;
-            $table->string('subject_type', '255')->nullable();;
-            $table->bigInteger('causer_id', '20')->nullable();;
-            $table->string('causer_type', '255')->nullable();;
-            $table->text('properties');
-            $table->timestamp('created_at')->nullable();;
-            $table->timestamp('updated_at')->nullable();;
+            $table->id()->primary();
+            $table->string('log_name', 255)->nullable();
+            $table->string('description', 255);
+            $table->unsignedBigInteger('subject_id', 20)->nullable();
+            $table->string('subject_type', 255)->nullable();
+            $table->unsignedBigInteger('causer_id', 20)->nullable();
+            $table->string('causer_type', 255)->nullable();
+            $table->text('properties')->nullable();
+            $table->timestamp('created_at');
+            $table->timestamp('updated_at');
         });
     }
 

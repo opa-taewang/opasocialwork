@@ -14,8 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('coupon_history', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id()->primary();
+            $table->unsignedBigInteger('coupon_id', 20);
+            $table->unsignedBigInteger('user_id', 20);
+            $table->dateTime('created_at')->useCurrent()->useCurrentOnUpdate();
+            $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->string('coupon_code', 255)->nullable();
         });
     }
 
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('coupon_histories');
+        Schema::dropIfExists('coupon_history');
     }
 };

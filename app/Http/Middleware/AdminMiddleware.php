@@ -18,7 +18,7 @@ class AdminMiddleware
     public function handle($request, Closure $next)
     {
         if (Auth::check()) {
-            return (Auth::user()->role->id == 1) ? $next($request) : abort('404', "Page Not Found");
+            return (Auth::user()->role === 'ADMIN') ? $next($request) : abort('404', "Page Not Found");
         }
         return redirect()->route('login');
         // ;

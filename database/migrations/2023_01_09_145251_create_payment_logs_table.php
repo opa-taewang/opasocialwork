@@ -14,8 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('payment_logs', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->bigInteger('id', 20);
+            $table->text('details');
+            $table->string('currency_code', 255);
+            $table->string('total_amount', 255);
+            $table->integer('payment_method_id', 10)->unsigned();
+            $table->integer('user_id', 10)->unsigned();
+            $table->timestamp('created_at');
+            $table->timestamp('updated_at');
+            $table->string('amountconversion', 255)->nullable();
         });
     }
 

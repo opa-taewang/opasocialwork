@@ -14,8 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('ips', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id()->primary();
+            $table->string('address', 255)->nullable();
+            $table->tinyInteger('blocked', 1)->default(0);
+            $table->text('reason')->nullable();
+            $table->integer('user_id', '11')->nullable();
+            $table->dateTime('created_at')->useCurrent()->useCurrentOnUpdate();
+            $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

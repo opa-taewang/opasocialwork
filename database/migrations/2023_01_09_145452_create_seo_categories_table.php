@@ -14,8 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('seocategories', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id()->primary();
+            $table->string('name', 255)->nullable();
+            $table->string('slug', 255)->nullable();
+            $table->text('description')->nullable();
+            $table->timestamp('created_at')->useCurrent()->useCurrentOnUpdate();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->integer('rank')->nullable();
         });
     }
 

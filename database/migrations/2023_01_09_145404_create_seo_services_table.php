@@ -14,8 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('seoservices', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id()->primary();
+            $table->text('name')->nullable();
+            $table->text('slug')->nullable();
+            $table->text('description')->nullable();
+            $table->integer('category_id', 11)->nullable();
+            $table->tinyInteger('status', 1)->default(1);
+            $table->timestamp('created_at')->useCurrent()->useCurrentOnUpdate();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->integer('rank')->nullable();
         });
     }
 

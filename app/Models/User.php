@@ -27,7 +27,7 @@ class User extends Authenticatable
         'funds',
         'role',
         'status',
-        'skype_id',
+        // 'skype_id',
         'enabled_payment_methods',
         'api_token',
         'last_login',
@@ -50,13 +50,10 @@ class User extends Authenticatable
         parent::boot();
 
         static::created(function ($user) {
-            //    Function to create uponm creation
+            $user->profile()->create([
+                'enabled_payment_methods' => 'NULL'
+            ]);
         });
-    }
-
-    public function role()
-    {
-        return $this->belongsTo(Role::class, 'role_id');
     }
 
     public function getReferralAttribute()

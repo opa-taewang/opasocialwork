@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Ip;
 use App\Visit;
+use App\Rules\Name;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -34,6 +35,16 @@ class RegisterController extends Controller
      */
     protected $redirectTo = RouteServiceProvider::HOME;
 
+    protected $messages = [
+        'name.required' => 'Enter your name',
+        'username.required' => 'Enter your desired username',
+        'email.required' => 'Enter your email',
+        'email.unique' => 'Email in use on another an account.',
+        'password.required' => 'Enter your password',
+        'password_confirmation.required' => 'Please confirm your password',
+        'password_confirmation.same' => 'Password does not match the Confirmation',
+    ];
+
     /**
      * Create a new controller instance.
      *
@@ -53,11 +64,12 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', new Name],
+            'username' => ['required', 'string', 'max:255', 'unique:users'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'username' => ['required', 'min:6', 'max:25', 'unique:users'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
-        ]);
+            'password' => ['required', 'string', 'min:8'],
+            'password_confirmation' => ['required', 'same:password'],
+        ], $this->messages);
     }
 
     /**

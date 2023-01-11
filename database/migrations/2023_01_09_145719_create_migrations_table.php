@@ -14,8 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('migrations', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id()->primary();
+            $table->string('migration', 255);
+            $table->integer('batch');
         });
     }
 
