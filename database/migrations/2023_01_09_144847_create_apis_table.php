@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('apis', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('name', 255);
             $table->decimal('rate', 15, 7)->default(0.0000000);
             $table->text('order_end_point');
@@ -37,7 +37,7 @@ return new class extends Migration
             $table->string('service_key', 255);
             $table->string('type_key', 255);
             $table->string('desc_key', 255);
-            $table->tinyInteger('process_all_order', 4)->default(0);
+            $table->tinyInteger('process_all_order')->lenght(4)->default(0);
             $table->timestamp('created_at');
             $table->timestamp('updated_at');
         });

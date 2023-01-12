@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('notifications', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('title', 255)->nullable();
             $table->text('description')->nullable();
             $table->text('details')->nullable();
-            $table->tinyInteger('status', 4);
+            $table->tinyInteger('status')->lenght(10);
             $table->timestamp('created_at');
             $table->timestamp('updated_at');
         });

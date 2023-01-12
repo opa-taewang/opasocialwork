@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('verify_users', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->integer('user_id', 11);
+            $table->id();
+            $table->integer('user_id')->lenght(10);
             $table->string('token', 255);
             $table->timestamp('created_at');
             $table->timestamp('updated_at');

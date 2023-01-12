@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('seocategories', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('name', 255)->nullable();
             $table->string('slug', 255)->nullable();
             $table->text('description')->nullable();

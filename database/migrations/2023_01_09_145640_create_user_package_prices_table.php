@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('user_package_prices', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->unsignedBigInteger('user_id', 20);
-            $table->unsignedBigInteger('package_id', 20);
+            $table->id();
+            $table->unsignedBigInteger('user_id')->lenght(20);
+            $table->unsignedBigInteger('package_id')->lenght(20);
             $table->decimal('price_per_item', 15, 7);
         });
     }

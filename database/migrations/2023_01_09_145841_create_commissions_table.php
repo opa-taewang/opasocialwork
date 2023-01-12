@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('commission', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->integer('commission_val', 11);
-            $table->integer('min_payout', 11);
+            $table->id();
+            $table->integer('commission_val')->lenght(10);
+            $table->integer('min_payout')->lenght(10);
             $table->timestamp('created_at');
             $table->timestamp('updated_at');
         });

@@ -22,7 +22,7 @@ class UserTableSeeder extends Seeder
             'username' => 'admin',
             'password' => Hash::make('Admin'),
             'enabled_payment_methods' => '1,2,3',
-            'role_id' => 1,
+            'role' => 'ADMIN',
             'created_at' => now(),
             'updated_at' => now()
         ]);
@@ -33,7 +33,7 @@ class UserTableSeeder extends Seeder
             'username' => 'moderator',
             'password' => Hash::make('Moderator'),
             'enabled_payment_methods' => '1,2,3',
-            'role_id' => 2,
+            'role' => 'MODERATOR',
             'created_at' => now(),
             'updated_at' => now()
         ]);
@@ -44,7 +44,7 @@ class UserTableSeeder extends Seeder
             'username' => 'user',
             'password' => Hash::make('User'),
             'enabled_payment_methods' => '1,2,3',
-            'role_id' => 3,
+            'role' => 'USER',
             'created_at' => now(),
             'updated_at' => now()
         ]);

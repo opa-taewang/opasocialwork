@@ -14,10 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('broadcasts', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('MsgTitle', 250);
             $table->string('MsgText', 500);
-            $table->integer('MsgStatus', 11);
+            $table->integer('MsgStatus')->lenght(10);
             $table->timestamp('StartTime');
             $table->timestamp('ExpireTime');
             $table->string('Icon', 500);

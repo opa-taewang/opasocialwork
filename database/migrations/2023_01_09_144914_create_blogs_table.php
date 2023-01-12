@@ -14,7 +14,7 @@
                 public function up()
                 {
                     Schema::create('blog', function (Blueprint $table) {
-                        $table->id()->primary();
+                        $table->id();
                         $table->text('title')->nullable();
                         $table->text('slug')->nullable();
                         $table->text('image')->nullable();

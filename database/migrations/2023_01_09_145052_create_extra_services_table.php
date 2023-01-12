@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('extraservices', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->unsignedBigInteger('package_id', 20);
+            $table->id();
+            $table->unsignedBigInteger('package_id')->lenght(20);
             $table->text('name')->nullable();
             $table->string('price', 255)->nullable();
             $table->timestamp('created_at');

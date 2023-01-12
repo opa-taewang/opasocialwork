@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('subscriptions', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->integer('quantity', 10)->unsigned();
-            $table->integer('user_id', 10)->unsigned();
-            $table->integer('package_id', 10)->unsigned();
-            $table->integer('posts', 10)->unsigned();
+            $table->id();
+            $table->integer('quantity')->lenght(10)->unsigned();
+            $table->bigInteger('user_id')->lenght(10)->unsigned();
+            $table->bigInteger('package_id')->lenght(10)->unsigned();
+            $table->integer('posts')->lenght(10)->unsigned();
             $table->decimal('price', 15, 7)->nullable();
             $table->string('link', 500);
             $table->enum('status', ['PENDING', 'ACTIVE', 'COMPLETED', 'STOPPED', 'CANCELLED'])->default('PENDING');

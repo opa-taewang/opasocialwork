@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('coupon_history', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->unsignedBigInteger('coupon_id', 20);
-            $table->unsignedBigInteger('user_id', 20);
+            $table->id();
+            $table->unsignedBigInteger('coupon_id')->lenght(20);
+            $table->unsignedBigInteger('user_id')->lenght(20);
             $table->dateTime('created_at')->useCurrent()->useCurrentOnUpdate();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->string('coupon_code', 255)->nullable();

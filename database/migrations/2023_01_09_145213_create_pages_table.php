@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('pages', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('slug', 255);
             $table->text('content');
             $table->text('meta_tags')->nullable();

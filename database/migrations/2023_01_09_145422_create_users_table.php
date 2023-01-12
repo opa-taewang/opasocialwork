@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('name', 255);
             $table->string('email', 191);
             $table->string('username', 255);
@@ -27,10 +27,10 @@ return new class extends Migration
             // $table->string('skype_id', 255)->nullanle();
             $table->string('timezone', 255)->default('Africa/Lagos');
             $table->timestamp('last_login')->nullable();
-            $table->integer('group_id', 11)->nullable();
+            $table->integer('group_id')->lenght(10)->nullable();
             $table->text('favorite_pkgs')->nullable();
             $table->string('remember_token', 255)->nullable();
-            $table->integer('currency_id', 11)->default(2);
+            $table->integer('currency_id')->lenght(10)->default(2);
             $table->string('ip', 255)->nullable();
             $table->decimal('reffund', 15, 7)->default(0.00000);
             $table->decimal('treffund', 15, 7)->default(0.00000);
@@ -40,7 +40,7 @@ return new class extends Migration
             $table->float('points')->default(0);
             $table->string('daold', 255)->nullable();
             $table->timestamp('created_at')->nullable();
-            $table->timestamp('updated_at ')->nullable();
+            $table->timestamp('updated_at')->nullable();
             $table->boolean('verified')->default(0);
             $table->boolean('is_subscribed_newsletter')->default(0);
         });

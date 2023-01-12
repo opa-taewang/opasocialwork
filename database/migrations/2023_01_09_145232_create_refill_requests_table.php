@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('refill_requests', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('order_id', 191);
             $table->enum('status', ['PENDING', 'IN PROGRESS', 'COMPLETED', 'CANCELLED'])->default('PENDING');
             $table->timestamp('created_at');

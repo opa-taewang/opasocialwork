@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('ads', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('title', 255)->nullable();
             $table->text('code')->nullable();
             $table->text('image')->nullable();

@@ -14,10 +14,10 @@
                 public function up()
                 {
                     Schema::create('api_mappings', function (Blueprint $table) {
-                        $table->id()->primary();
-                        $table->integer('package_id', 10)->unsigned();
+                        $table->id();
+                        $table->integer('package_id')->lenght(10)->unsigned();
                         $table->string('api_package_id', 255);
-                        $table->integer('api_id', 10)->unsigned();
+                        $table->unsignedBigInteger('api_id')->lenght(10)->unsigned();
                         $table->timestamp('created_at');
                         $table->timestamp('updated_at');
 

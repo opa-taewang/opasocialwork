@@ -14,12 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('groups', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('name', 255)->nullable();
             $table->longText('patextckage_ids')->nullable();
             $table->text('user_ids')->nullable();
             $table->float('price_percentage')->nullable();
-            $table->tinyInteger('isdefault', 1)->default(0);
+            $table->tinyInteger('isdefault')->lenght(1)->default(0);
             $table->dateTime('created_at')->useCurrent()->useCurrentOnUpdate();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->double('funds_limit')->nullable();

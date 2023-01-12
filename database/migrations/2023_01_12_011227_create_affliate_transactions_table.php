@@ -14,10 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('affiliate_transactions', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->integer('package_id', 10)->unsigned();
-            $table->integer('refUid', 10)->unsigned();
-            $table->integer('buyUid', 10)->unsigned();
+            $table->id();
+            $table->bigInteger('package_id')->lenght(10)->unsigned();
+            $table->bigInteger('refUid')->lenght(10)->unsigned();
+            $table->bigInteger('buyUid')->lenght(10)->unsigned();
             $table->decimal('price', 11, 7);
             $table->decimal('transferedFund', 11, 7);
             $table->timestamp('created_at');

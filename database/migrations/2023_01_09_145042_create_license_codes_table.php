@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('licensecodes', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('code', 25)->nullable();
-            $table->tinyInteger('available', 1)->nullable();
+            $table->tinyInteger('available')->lenght(1)->nullable();
             $table->string('purchase_by', 255)->nullable();
             $table->timestamp('created_at');
             $table->date('updated_at')->nullable();

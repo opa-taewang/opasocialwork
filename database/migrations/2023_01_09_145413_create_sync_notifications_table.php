@@ -14,13 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('sync_notifications', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->integer('api_id', 10)->unsigned();
+            $table->id();
+            $table->integer('api_id')->lenght(10)->unsigned();
             $table->string('api_name', 255);
-            $table->integer('package_id', 10)->unsigned();
+            $table->integer('package_id')->lenght(10)->unsigned();
             $table->string('package_name', 255);
             $table->string('reason', 255)->default('');
-            $table->string('color', 10)->default('');
+            $table->string('color')->lenght(10)->default('');
             $table->string('action', 255)->default('');
             $table->timestamp('created_at')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('updated_at');

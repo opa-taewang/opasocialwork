@@ -14,19 +14,19 @@
                 public function up()
                 {
                     Schema::create('auto_likes', function (Blueprint $table) {
-                        $table->id()->primary();
+                        $table->id();
                         $table->enum('status', ['SUBMITTED', 'INPROGRESS', 'PARTIAL', 'CANCELLED', 'COMPLETED'])->default('SUBMITTED');
                         $table->string('username', 300)->nullable();
-                        $table->integer('min', 10)->unsigned()->nullable();
-                        $table->integer('max', 10)->unsigned()->nullable();
-                        $table->integer('posts', 10)->unsigned()->nullable();
+                        $table->integer('min')->lenght(10)->unsigned()->nullable();
+                        $table->integer('max')->lenght(10)->unsigned()->nullable();
+                        $table->integer('posts')->lenght(10)->unsigned()->nullable();
                         $table->decimal('run_price', 15, 7)->nullable();
-                        $table->integer('runs_triggered', 10)->unsigned()->nullable();
-                        $table->integer('user_id', 10)->unsigned()->nullable();
-                        $table->integer('package_id', 10)->unsigned()->nullable();
-                        $table->tinyInteger('dripfeed', 4)->default(0);
-                        $table->integer('dripfeed_runs', 10)->unsigned()->nullable();
-                        $table->integer('dripfeed_interval', 10)->unsigned()->nullable();
+                        $table->integer('runs_triggered')->lenght(10)->unsigned()->nullable();
+                        $table->integer('user_id')->lenght(10)->unsigned()->nullable();
+                        $table->integer('package_id')->lenght(10)->unsigned()->nullable();
+                        $table->tinyInteger('dripfeed')->lenght(10)->default(0);
+                        $table->integer('dripfeed_runs')->lenght(10)->unsigned()->nullable();
+                        $table->integer('dripfeed_interval')->lenght(10)->unsigned()->nullable();
                         $table->string('last_post', 255)->nullable();
                         $table->timestamp('created_at');
                         $table->timestamp('updated_at');

@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('redeem_points', function (Blueprint $table) {
-            $table->bigInteger('id', 20);
+            $table->id();
             $table->decimal('amount', 15, 7)->nullable();
-            $table->integer('user_id', 10)->unsigned();
+            $table->integer('user_id')->lenght(10)->unsigned();
             $table->text('status')->nullable();
             $table->timestamp('created_at');
             $table->timestamp('updated_at');

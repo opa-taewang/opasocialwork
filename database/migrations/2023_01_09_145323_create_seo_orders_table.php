@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('seoorders', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->unsignedBigInteger('user_id', 20);
-            $table->unsignedBigInteger('package_id', 20);
+            $table->id();
+            $table->unsignedBigInteger('user_id')->lenght(20);
+            $table->unsignedBigInteger('package_id')->lenght(20);
             $table->double('total_amount')->nullable();
-            $table->tinyInteger('dripfeed', 1)->default(0);
+            $table->tinyInteger('dripfeed')->lenght(1)->default(0);
             $table->longText('retextquirements')->nullable();
             $table->text('extra_services')->nullable();
             $table->string('runs', 255)->nullable();

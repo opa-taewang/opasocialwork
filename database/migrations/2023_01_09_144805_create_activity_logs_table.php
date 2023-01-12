@@ -14,12 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('activity_log', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('log_name', 255)->nullable();
             $table->string('description', 255);
-            $table->unsignedBigInteger('subject_id', 20)->nullable();
+            $table->bigInteger('subject_id')->lenght(20)->unsigned()->nullable();
             $table->string('subject_type', 255)->nullable();
-            $table->unsignedBigInteger('causer_id', 20)->nullable();
+            $table->bigInteger('causer_id')->lenght(20)->unsigned()->nullable();
             $table->string('causer_type', 255)->nullable();
             $table->text('properties')->nullable();
             $table->timestamp('created_at');
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('activity_logs');
+        Schema::dropIfExists('activity_log');
     }
 };

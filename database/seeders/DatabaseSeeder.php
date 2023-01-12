@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             UserTableSeeder::class,
             CurrencyTableSeeder::class,
             PaymentMethodTableSeeder::class,
+            CommissionTableSeeder::class,
+            ConfigTableSeeder::class,
         ]);
     }
 }

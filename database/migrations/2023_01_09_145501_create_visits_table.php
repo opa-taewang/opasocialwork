@@ -14,9 +14,9 @@
                 public function up()
                 {
                     Schema::create('visits', function (Blueprint $table) {
-                        $table->id()->primary();
-                        $table->integer('refUid', 10)->unsigned();
-                        $table->integer('refVid', 10)->unsigned();
+                        $table->id();
+                        $table->integer('refUid')->lenght(10)->unsigned();
+                        $table->integer('refVid')->lenght(10)->unsigned();
                         $table->string('visitorIp', 45)->nullable();
                         $table->timestamp('created_at');
                         $table->timestamp('updated_at');

@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('fast_replies', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('title', 255)->nullable();
             $table->longText('metextssage')->nullable();
             $table->dateTime('created_at')->useCurrent()->useCurrentOnUpdate();

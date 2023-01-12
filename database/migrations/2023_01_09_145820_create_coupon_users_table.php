@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('coupon_users', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->integer('coupon_id', '11')->nullable();
-            $table->integer('user_id', '11')->nullable();
+            $table->id();
+            $table->integer('coupon_id')->lenght(11)->nullable();
+            $table->integer('user_id')->lenght(11)->nullable();
             $table->dateTime('created_at')->useCurrent()->useCurrentOnUpdate();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
         });

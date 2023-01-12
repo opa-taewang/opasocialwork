@@ -14,15 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('coupons', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('code', 255)->nullable();
             $table->double('min_funds')->nullable();
-            $table->integer('max_usage', 11)->nullable();
-            $table->integer('account_age', 11)->nullable();
+            $table->integer('max_usage')->lenght(10)->nullable();
+            $table->integer('account_age')->lenght(10)->nullable();
             $table->double('amount')->nullable();
             $table->dateTime('expiry')->nullable();
-            $table->integer('hours', 11)->nullable();
-            $table->integer('funds', 11)->nullable();
+            $table->integer('hours')->lenght(10)->nullable();
+            $table->integer('funds')->lenght(10)->nullable();
             $table->string('status', 255)->nullable();
             $table->dateTime('created_at')->useCurrent()->useCurrentOnUpdate();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();

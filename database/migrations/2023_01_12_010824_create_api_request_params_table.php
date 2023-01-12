@@ -13,11 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('api_response_logs', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->integer('order_id', 10)->unsigned();
-            $table->integer('api_id', 10)->unsigned();
-            $table->text('response');
+        Schema::create('api_request_params', function (Blueprint $table) {
+            $table->id();
+            $table->string('param_key', 255);
+            $table->string('param_value', 255);
+            $table->string('param_type', 255);
+            $table->string('api_type', 255);
+            $table->bigInteger('api_id')->lenght(10)->unsigned();
             $table->timestamp('created_at');
             $table->timestamp('updated_at');
 
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('api_response_logs');
+        Schema::dropIfExists('api_request_params');
     }
 };

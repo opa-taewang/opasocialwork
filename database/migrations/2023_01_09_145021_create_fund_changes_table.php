@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('fundchange', function (Blueprint $table) {
-            $table->bigInteger('id', 20);
+            $table->id('id');
             $table->text('details')->nullable();
-            $table->integer('user_id', 10)->unsigned();
+            $table->integer('user_id')->lenght(10)->unsigned();
             $table->decimal('pricebefore', 15, 7)->nullable();
             $table->decimal('priceafter', 15, 7)->nullable();
             $table->text('reason')->nullable();

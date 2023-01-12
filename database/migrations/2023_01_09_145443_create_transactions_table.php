@@ -14,10 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('transactions', function (Blueprint $table) {
-            $table->bigInteger('id', 20);
+            $table->id();
             $table->decimal('amount', 15, 7)->nullable();
-            $table->integer('payment_method_id', 10)->unsigned();
-            $table->integer('user_id', 10)->unsigned();
+            $table->integer('payment_method_id')->lenght(10)->unsigned();
+            $table->integer('user_id')->lenght(10)->unsigned();
             $table->text('details')->nullable();
             $table->timestamp('created_at');
             $table->timestamp('updated_at');
