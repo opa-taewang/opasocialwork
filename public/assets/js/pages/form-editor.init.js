@@ -10,7 +10,6 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Form editor Js File
 */
-
 $(document).ready(function () {
   if ($("#elm1").length > 0) {
     tinymce.init({

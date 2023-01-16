@@ -10,11 +10,11 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Apex Chart init js
 */
-
 !function ($) {
   "use strict";
 
   var CalendarPage = function CalendarPage() {};
+
   CalendarPage.prototype.init = function () {
     var addEvent = $("#event-modal");
     var modalTitle = $("#modal-title");
@@ -32,8 +32,8 @@ File: Apex Chart init js
     var m = date.getMonth();
     var y = date.getFullYear();
     var Draggable = FullCalendarInteraction.Draggable;
-    var externalEventContainerEl = document.getElementById('external-events');
-    // init dragable
+    var externalEventContainerEl = document.getElementById('external-events'); // init dragable
+
     new Draggable(externalEventContainerEl, {
       itemSelector: '.external-event',
       eventData: function eventData(eventEl) {
@@ -89,6 +89,7 @@ File: Apex Chart init js
     }];
     var draggableEl = document.getElementById('external-events');
     var calendarEl = document.getElementById('calendar');
+
     function addNewEvent(info) {
       addEvent.modal('show');
       formEvent.removeClass("was-validated");
@@ -98,6 +99,7 @@ File: Apex Chart init js
       modalTitle.text('Add Event');
       newEventData = info;
     }
+
     var calendar = new FullCalendar.Calendar(calendarEl, {
       plugins: ['bootstrap', 'interaction', 'dayGrid', 'timeGrid'],
       editable: true,
@@ -126,7 +128,6 @@ File: Apex Chart init js
       events: defaultEvents
     });
     calendar.render();
-
     /*Add new event*/
     // Form to add new event
 
@@ -134,9 +135,8 @@ File: Apex Chart init js
       ev.preventDefault();
       var inputs = $('#form-event :input');
       var updatedTitle = $("#event-title").val();
-      var updatedCategory = $('#event-category').val();
+      var updatedCategory = $('#event-category').val(); // validation
 
-      // validation
       if (forms[0].checkValidity() === false) {
         event.preventDefault();
         event.stopPropagation();
@@ -154,6 +154,7 @@ File: Apex Chart init js
           };
           calendar.addEvent(newEvent);
         }
+
         addEvent.modal('hide');
       }
     });
@@ -170,11 +171,9 @@ File: Apex Chart init js
         allDay: true
       });
     });
-  },
-  //init
+  }, //init
   $.CalendarPage = new CalendarPage(), $.CalendarPage.Constructor = CalendarPage;
-}(window.jQuery),
-//initializing 
+}(window.jQuery), //initializing 
 function ($) {
   "use strict";
 

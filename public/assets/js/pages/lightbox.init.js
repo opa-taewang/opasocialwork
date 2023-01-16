@@ -14,13 +14,12 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Lightbox  Js File
 */
-
 (function ($) {
   'use strict';
-
   /*
   Single Image
   */
+
   $('.image-popup-vertical-fit').magnificPopup({
     type: 'image',
     closeOnContentClick: true,
@@ -42,12 +41,13 @@ File: Lightbox  Js File
     zoom: {
       enabled: true,
       duration: 300 // don't foget to change the duration also in CSS
+
     }
   });
-
   /*
   Gallery
   */
+
   $('.popup-gallery').magnificPopup({
     delegate: 'a',
     type: 'image',
@@ -57,16 +57,16 @@ File: Lightbox  Js File
       enabled: true,
       navigateByImgClick: true,
       preload: [0, 1] // Will preload 0 - before current, and 1 after the current image
-    },
 
+    },
     image: {
       tError: '<a href="%url%">The image #%curr%</a> could not be loaded.'
     }
   });
-
   /*
   Zoom Gallery
   */
+
   $('.zoom-gallery').magnificPopup({
     delegate: 'a',
     type: 'image',
@@ -91,10 +91,10 @@ File: Lightbox  Js File
       }
     }
   });
-
   /*
   Popup with video or map
   */
+
   $('.popup-youtube, .popup-vimeo, .popup-gmaps').magnificPopup({
     disableOn: 700,
     type: 'iframe',
@@ -103,10 +103,10 @@ File: Lightbox  Js File
     preloader: false,
     fixedContentPos: false
   });
-
   /*
   Dialog with CSS animation
   */
+
   $('.popup-with-zoom-anim').magnificPopup({
     type: 'inline',
     fixedContentPos: false,

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User\OpaSocial;
 
+use App\Http\Controllers\Controller;
+
 class SubscriptionController extends Controller
 {
     public function __construct()

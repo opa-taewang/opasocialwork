@@ -1,7 +1,7 @@
 @extends('main.layouts.components.breadcrumb')
 
 @section('title')
-    @lang('translation.Maintenance')
+    @lang('Maintenance')
 @endsection
 
 @section('body')

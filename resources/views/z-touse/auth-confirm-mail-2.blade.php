@@ -1,7 +1,7 @@
 @extends('main.layouts.components.breadcrumb')
 
 @section('title')
-    @lang('translation.Confirm_Mail') 2
+    @lang('Confirm_Mail') 2
 @endsection
 
 @section('css')

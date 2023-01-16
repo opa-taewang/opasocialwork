@@ -10,11 +10,11 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Vector Maps init Js File
 */
-
 !function ($) {
   "use strict";
 
   var VectorMap = function VectorMap() {};
+
   VectorMap.prototype.init = function () {
     //various examples
     $('#world-map-markers').vectorMap({
@@ -162,11 +162,9 @@ File: Vector Maps init Js File
         }
       }
     });
-  },
-  //init
+  }, //init
   $.VectorMap = new VectorMap(), $.VectorMap.Constructor = VectorMap;
-}(window.jQuery),
-//initializing
+}(window.jQuery), //initializing
 function ($) {
   "use strict";
 

@@ -10,7 +10,6 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Property list filter init js
 */
-
 $(document).ready(function () {
   $("#pricerange").ionRangeSlider({
     skin: "square",

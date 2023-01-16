@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Models\Coupon\PaymentMethod;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 
@@ -16,8 +17,8 @@ class CoinPaymentsController extends Controller
 
     public function __construct()
     {
-        $this->merchantId = \App\PaymentMethod::where(array("config_key" => "merchant_id"))->first()->config_value;
-        $this->secretKey = \App\PaymentMethod::where(array("config_key" => "secret_key"))->first()->config_value;
+        $this->merchantId = PaymentMethod::where(array("config_key" => "merchant_id"))->first()->config_value;
+        $this->secretKey = PaymentMethod::where(array("config_key" => "secret_key"))->first()->config_value;
     }
 
     public function showForm()

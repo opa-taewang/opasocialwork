@@ -1,7 +1,7 @@
 @extends('main.layouts.components.breadcrumb')
 
 @section('title')
-    @lang('translation.Two_step_verification')
+    @lang('Two_step_verification')
 @endsection
 
 @section('body')

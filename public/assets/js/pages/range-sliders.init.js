@@ -10,7 +10,6 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Range sliders Js File
 */
-
 $(document).ready(function () {
   $("#range_01").ionRangeSlider({
     skin: "square"

@@ -14,42 +14,43 @@ File: Dashboard Init Js File
 // get colors array from the string
 function getChartColorsArray(chartId) {
   if (document.getElementById(chartId) !== null) {
-    var colors = document.getElementById(chartId).getAttribute("data-colors");
-    if (colors) {
-      colors = JSON.parse(colors);
-      return colors.map(function (value) {
-        var newValue = value.replace(" ", "");
-        if (newValue.indexOf(",") === -1) {
-          var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
-          if (color) {
-            color = color.replace(" ", "");
-            return color;
-          } else return newValue;
-          ;
-        } else {
-          var val = value.split(',');
-          if (val.length == 2) {
-            var rgbaColor = getComputedStyle(document.documentElement).getPropertyValue(val[0]);
-            rgbaColor = "rgba(" + rgbaColor + "," + val[1] + ")";
-            return rgbaColor;
-          } else {
-            return newValue;
-          }
-        }
-      });
-    }
+      var colors = document.getElementById(chartId).getAttribute("data-colors");
+      
+      if (colors) {
+          colors = JSON.parse(colors);
+          return colors.map(function (value) {
+              var newValue = value.replace(" ", "");
+              if (newValue.indexOf(",") === -1) {
+                  var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
+                  
+                  if (color){
+                    color = color.replace(" ", "");
+                    return color;
+                  }
+                  else return newValue;;
+              } else {
+                  var val = value.split(',');
+                  if (val.length == 2) {
+                      var rgbaColor = getComputedStyle(document.documentElement).getPropertyValue(val[0]);
+                      rgbaColor = "rgba(" + rgbaColor + "," + val[1] + ")";
+                      return rgbaColor;
+                  } else {
+                      return newValue;
+                  }
+              }
+          });
+      }
   }
-}
-
-//  subscribe modal
+} //  subscribe modal
 
 setTimeout(function () {
   $('#subscribeModal').modal('show');
-}, 2000);
+}, 2000); // stacked column chart
 
-// stacked column chart
 var linechartBasicColors = getChartColorsArray("stacked-column-chart");
+
 if (linechartBasicColors) {
+  console.log(linechartBasicColors)
   var options = {
     chart: {
       height: 360,
@@ -93,12 +94,14 @@ if (linechartBasicColors) {
       opacity: 1
     }
   };
+  
   var chart = new ApexCharts(document.querySelector("#stacked-column-chart"), options);
   chart.render();
-}
+} // Radial chart
 
-// Radial chart
+
 var radialbarColors = getChartColorsArray("radialBar-chart");
+
 if (radialbarColors) {
   var options = {
     chart: {

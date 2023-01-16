@@ -10,11 +10,11 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Form Advanced Js File
 */
-
 !function ($) {
   "use strict";
 
   var AdvancedForm = function AdvancedForm() {};
+
   AdvancedForm.prototype.init = function () {
     // Select2
     $(".select2").select2();
@@ -56,10 +56,12 @@ File: Form Advanced Js File
       templateResult: formatRepo,
       templateSelection: formatRepoSelection
     });
+
     function formatRepo(repo) {
       if (repo.loading) {
         return repo.text;
       }
+
       var $container = $("<div class='select2-result-repository clearfix'>" + "<div class='select2-result-repository__avatar'><img src='" + repo.owner.avatar_url + "' /></div>" + "<div class='select2-result-repository__meta'>" + "<div class='select2-result-repository__title'></div>" + "<div class='select2-result-repository__description'></div>" + "<div class='select2-result-repository__statistics'>" + "<div class='select2-result-repository__forks'><i class='fa fa-flash'></i> </div>" + "<div class='select2-result-repository__stargazers'><i class='fa fa-star'></i> </div>" + "<div class='select2-result-repository__watchers'><i class='fa fa-eye'></i> </div>" + "</div>" + "</div>" + "</div>");
       $container.find(".select2-result-repository__title").text(repo.full_name);
       $container.find(".select2-result-repository__description").text(repo.description);
@@ -68,23 +70,26 @@ File: Form Advanced Js File
       $container.find(".select2-result-repository__watchers").append(repo.watchers_count + " Watchers");
       return $container;
     }
+
     function formatRepoSelection(repo) {
       return repo.full_name || repo.text;
     }
+
     function formatState(state) {
       if (!state.id) {
         return state.text;
       }
+
       var baseUrl = "assets/images/flags/select2";
       var $state = $('<span><img src="' + baseUrl + '/' + state.element.value.toLowerCase() + '.png" class="img-flag" /> ' + state.text + '</span>');
       return $state;
     }
+
     ;
     $(".select2-templating").select2({
       templateResult: formatState
-    });
+    }); //colorpicker start
 
-    //colorpicker start
     $("#colorpicker-default").spectrum();
     $("#colorpicker-showalpha").spectrum({
       showAlpha: true
@@ -109,9 +114,8 @@ File: Form Advanced Js File
     $("#colorpicker-showinput-intial").spectrum({
       showInitial: true,
       showInput: true
-    });
+    }); // Time Picker
 
-    // Time Picker
     $('#timepicker').timepicker({
       icons: {
         up: 'mdi mdi-chevron-up',
@@ -134,12 +138,10 @@ File: Form Advanced Js File
         down: 'mdi mdi-chevron-down'
       },
       appendWidgetTo: "#timepicker-input-group3"
-    });
+    }); //Bootstrap-TouchSpin
 
-    //Bootstrap-TouchSpin
-    var defaultOptions = {};
+    var defaultOptions = {}; // touchspin
 
-    // touchspin
     $('[data-toggle="touchspin"]').each(function (idx, obj) {
       var objOptions = $.extend({}, defaultOptions, $(obj).data());
       $(obj).TouchSpin(objOptions);
@@ -156,9 +158,8 @@ File: Form Advanced Js File
     });
     $("input[name='demo_vertical']").TouchSpin({
       verticalbuttons: true
-    });
+    }); //Bootstrap-MaxLength
 
-    //Bootstrap-MaxLength
     $('input#defaultconfig').maxlength({
       warningClass: "badge bg-info",
       limitReachedClass: "badge bg-warning"
@@ -193,11 +194,9 @@ File: Form Advanced Js File
       warningClass: "badge bg-info",
       limitReachedClass: "badge bg-warning"
     });
-  },
-  //init
+  }, //init
   $.AdvancedForm = new AdvancedForm(), $.AdvancedForm.Constructor = AdvancedForm;
-}(window.jQuery),
-//Datepicker
+}(window.jQuery), //Datepicker
 function ($) {
   "use strict";
 
@@ -237,6 +236,7 @@ $(function () {
     var name = $target.attr('name');
     var value = target.type === 'checkbox' ? target.checked : $target.val();
     var $optionContainer;
+
     switch (name) {
       case 'container':
         if (value) {
@@ -245,7 +245,9 @@ $(function () {
         } else {
           $container.hide();
         }
+
         break;
+
       case 'trigger':
         if (value) {
           value = $trigger;
@@ -253,17 +255,23 @@ $(function () {
         } else {
           $trigger.prop('disabled', true);
         }
+
         break;
+
       case 'inline':
         $optionContainer = $('input[name="container"]');
+
         if (!$optionContainer.prop('checked')) {
           $optionContainer.click();
         }
+
         break;
+
       case 'language':
         $('input[name="format"]').val($.fn.datepicker.languages[value].format);
         break;
     }
+
     options[name] = value;
     $date.datepicker('reset').datepicker('destroy').datepicker(options);
   });
@@ -272,11 +280,13 @@ $(function () {
     var args = data.arguments || [];
     var result;
     e.stopPropagation();
+
     if (data.method) {
       if (data.source) {
         $date.datepicker(data.method, $(data.source).val());
       } else {
         result = $date.datepicker(data.method, args[0], args[1], args[2]);
+
         if (result && data.target) {
           $(data.target).val(result);
         }

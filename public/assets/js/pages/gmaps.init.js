@@ -10,7 +10,6 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: gmaps init Js File
 */
-
 var map;
 $(document).ready(function () {
   // Markers
@@ -31,9 +30,8 @@ $(document).ready(function () {
       if (console.log) console.log(e);
       alert('You clicked in this marker');
     }
-  });
+  }); // Overlays
 
-  // Overlays
   map = new GMaps({
     div: '#gmaps-overlay',
     lat: -12.043333,
@@ -45,16 +43,14 @@ $(document).ready(function () {
     content: '<div class="gmaps-overlay">Lima<div class="gmaps-overlay_arrow above"></div></div>',
     verticalAlign: 'top',
     horizontalAlign: 'center'
-  });
+  }); //panorama
 
-  //panorama
   map = GMaps.createPanorama({
     el: '#panorama',
     lat: 42.3455,
     lng: -71.0983
-  });
+  }); //Map type
 
-  //Map type
   map = new GMaps({
     div: '#gmaps-types',
     lat: -12.043333,

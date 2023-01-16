@@ -3,6 +3,8 @@
 
 namespace App\Http\Controllers\User\OpaSocial;
 
+use App\Http\Controllers\Controller;
+
 class ChildPanelController extends Controller
 {
     public function __construct()

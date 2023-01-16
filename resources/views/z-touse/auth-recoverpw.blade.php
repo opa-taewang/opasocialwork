@@ -1,7 +1,7 @@
 @extends('main.layouts.components.breadcrumb')
 
 @section('title')
-    @lang('translation.Recover_Password')
+    @lang('Recover_Password')
 @endsection
 
 @section('body')

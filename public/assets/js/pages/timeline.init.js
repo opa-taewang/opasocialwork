@@ -10,7 +10,6 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Timeline Init Js File
 */
-
 $('#timeline-carousel').owlCarousel({
   items: 1,
   loop: false,

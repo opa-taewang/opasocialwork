@@ -10,11 +10,9 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Datatables Js File
 */
-
 $(document).ready(function () {
-  $('#datatable').DataTable();
+  $('#datatable').DataTable(); //Buttons examples
 
-  //Buttons examples
   var table = $('#datatable-buttons').DataTable({
     lengthChange: false,
     buttons: ['copy', 'excel', 'pdf', 'colvis']

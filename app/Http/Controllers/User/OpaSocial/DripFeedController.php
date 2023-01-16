@@ -3,11 +3,13 @@
 
 namespace App\Http\Controllers\User\OpaSocial;
 
+use App\Http\Controllers\Controller;
+
 class DripFeedController extends Controller
 {
     public function index()
     {
-        return view("dripfeed.index");
+        // return view("dripfeed.index");
     }
     public function indexData()
     {

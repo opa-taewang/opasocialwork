@@ -1,7 +1,7 @@
 @extends('main.layouts.components.breadcrumb')
 
 @section('title')
-    @lang('translation.Lock_Screen')
+    @lang('Lock_Screen')
 @endsection
 
 @section('body')

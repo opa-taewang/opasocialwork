@@ -14,39 +14,41 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Apex Chart init js
 */
-
 // get colors array from the string
 function getChartColorsArray(chartId) {
   if (document.getElementById(chartId) !== null) {
-    var colors = document.getElementById(chartId).getAttribute("data-colors");
-    if (colors) {
-      colors = JSON.parse(colors);
-      return colors.map(function (value) {
-        var newValue = value.replace(" ", "");
-        if (newValue.indexOf(",") === -1) {
-          var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
-          if (color) {
-            color = color.replace(" ", "");
-            return color;
-          } else return newValue;
-          ;
-        } else {
-          var val = value.split(',');
-          if (val.length == 2) {
-            var rgbaColor = getComputedStyle(document.documentElement).getPropertyValue(val[0]);
-            rgbaColor = "rgba(" + rgbaColor + "," + val[1] + ")";
-            return rgbaColor;
-          } else {
-            return newValue;
-          }
-        }
-      });
-    }
+      var colors = document.getElementById(chartId).getAttribute("data-colors");
+      
+      if (colors) {
+          colors = JSON.parse(colors);
+          return colors.map(function (value) {
+              var newValue = value.replace(" ", "");
+              if (newValue.indexOf(",") === -1) {
+                  var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
+                  
+                  if (color){
+                    color = color.replace(" ", "");
+                    return color;
+                  }
+                  else return newValue;;
+              } else {
+                  var val = value.split(',');
+                  if (val.length == 2) {
+                      var rgbaColor = getComputedStyle(document.documentElement).getPropertyValue(val[0]);
+                      rgbaColor = "rgba(" + rgbaColor + "," + val[1] + ")";
+                      return rgbaColor;
+                  } else {
+                      return newValue;
+                  }
+              }
+          });
+      }
   }
-}
+} //  line chart datalabel
 
-//  line chart datalabel
+
 var lineChartDatalabelColors = getChartColorsArray("line_chart_datalabel");
+
 if (lineChartDatalabelColors) {
   var options = {
     chart: {
@@ -129,10 +131,11 @@ if (lineChartDatalabelColors) {
   };
   var chart = new ApexCharts(document.querySelector("#line_chart_datalabel"), options);
   chart.render();
-}
+} //  line chart datalabel
 
-//  line chart datalabel
+
 var lineChartdashedColors = getChartColorsArray("line_chart_dashed");
+
 if (lineChartdashedColors) {
   var options = {
     chart: {
@@ -207,10 +210,11 @@ if (lineChartdashedColors) {
   };
   var chart = new ApexCharts(document.querySelector("#line_chart_dashed"), options);
   chart.render();
-}
+} //   spline_area
 
-//   spline_area
+
 var lineChartsplineAreaColors = getChartColorsArray("spline_area");
+
 if (lineChartsplineAreaColors) {
   var options = {
     chart: {
@@ -250,10 +254,11 @@ if (lineChartsplineAreaColors) {
   };
   var chart = new ApexCharts(document.querySelector("#spline_area"), options);
   chart.render();
-}
+} // column chart
 
-// column chart
+
 var columnChartColors = getChartColorsArray("column_chart");
+
 if (columnChartColors) {
   var options = {
     chart: {
@@ -316,10 +321,11 @@ if (columnChartColors) {
   };
   var chart = new ApexCharts(document.querySelector("#column_chart"), options);
   chart.render();
-}
+} // column chart with datalabels
 
-// column chart with datalabels
+
 var columnChartDatalabelColors = getChartColorsArray("column_chart_datalabel");
+
 if (columnChartDatalabelColors) {
   var options = {
     chart: {
@@ -333,10 +339,10 @@ if (columnChartDatalabelColors) {
       bar: {
         dataLabels: {
           position: 'top' // top, center, bottom
+
         }
       }
     },
-
     dataLabels: {
       enabled: true,
       formatter: function formatter(val) {
@@ -424,10 +430,11 @@ if (columnChartDatalabelColors) {
   };
   var chart = new ApexCharts(document.querySelector("#column_chart_datalabel"), options);
   chart.render();
-}
+} // Bar chart
 
-// Bar chart
+
 var barChartColors = getChartColorsArray("bar_chart");
+
 if (barChartColors) {
   var options = {
     chart: {
@@ -458,10 +465,11 @@ if (barChartColors) {
   };
   var chart = new ApexCharts(document.querySelector("#bar_chart"), options);
   chart.render();
-}
+} // Mixed chart
 
-// Mixed chart
+
 var mixedChartColors = getChartColorsArray("mixed_chart");
+
 if (mixedChartColors) {
   var options = {
     chart: {
@@ -526,6 +534,7 @@ if (mixedChartColors) {
           if (typeof y !== "undefined") {
             return y.toFixed(0) + " points";
           }
+
           return y;
         }
       }
@@ -536,10 +545,11 @@ if (mixedChartColors) {
   };
   var chart = new ApexCharts(document.querySelector("#mixed_chart"), options);
   chart.render();
-}
+} //  Radial chart
 
-//  Radial chart
+
 var radialChartColors = getChartColorsArray("radial_chart");
+
 if (radialChartColors) {
   var options = {
     chart: {
@@ -572,10 +582,11 @@ if (radialChartColors) {
   };
   var chart = new ApexCharts(document.querySelector("#radial_chart"), options);
   chart.render();
-}
+} // pie chart
 
-// pie chart
+
 var pieChartColors = getChartColorsArray("pie_chart");
+
 if (pieChartColors) {
   var options = {
     chart: {
@@ -608,10 +619,11 @@ if (pieChartColors) {
   };
   var chart = new ApexCharts(document.querySelector("#pie_chart"), options);
   chart.render();
-}
+} // Donut chart
 
-// Donut chart
+
 var donutChartColors = getChartColorsArray("donut_chart");
+
 if (donutChartColors) {
   var options = {
     chart: {
@@ -820,7 +832,7 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 			return __webpack_require__.O(result);
 /******/ 		}
 /******/ 		
-/******/ 		var chunkLoadingGlobal = self["webpackChunkopasocial"] = self["webpackChunkopasocial"] || [];
+/******/ 		var chunkLoadingGlobal = self["webpackChunkskote"] = self["webpackChunkskote"] || [];
 /******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
 /******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
 /******/ 	}();

@@ -1,7 +1,7 @@
 @extends('main.layouts.components.breadcrumb')
 
 @section('title')
-    @lang('translation.Error_404')
+    @lang('Error_404')
 @endsection
 
 @section('body')

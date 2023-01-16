@@ -3,10 +3,11 @@
 
 <head>
     <meta charset="utf-8" />
-    <title> @yield('title') | Skote - Admin & Dashboard Template</title>
+    <title> @yield('title') | Opasocial - Number #1 Social Media Marketing Panel</title>
+    <meta name="description" content="The number #1 social media growing channel in Africa">
+    <meta name="keywords" content="smm, social, social media marketing in nigeria, nigeria, africa, smm panel, smm panel in africa, smm panel in nigeria ">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-    <meta content="Themesbrand" name="author" />
+    <meta content="OpaSocial" name="author" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ URL::asset('assets/images/favicon.ico') }}">
     @include('main.layouts.head-css')

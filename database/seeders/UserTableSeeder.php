@@ -16,37 +16,42 @@ class UserTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->insert([
-            'name' => 'John Admin',
-            'email' => 'opaverifyadmin@mailforspam.com',
-            'username' => 'admin',
-            'password' => Hash::make('Admin'),
-            'enabled_payment_methods' => '1,2,3',
-            'role' => 'ADMIN',
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+        DB::table('users')->delete();
 
         DB::table('users')->insert([
-            'name' => 'John Moderator',
-            'email' => 'opaverifymoderator@mailforspam.com',
-            'username' => 'moderator',
-            'password' => Hash::make('Moderator'),
-            'enabled_payment_methods' => '1,2,3',
-            'role' => 'MODERATOR',
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
-
-        DB::table('users')->insert([
-            'name' => 'John User',
-            'email' => 'opaverifyuser@mailforspam.com',
-            'username' => 'user',
-            'password' => Hash::make('User'),
-            'enabled_payment_methods' => '1,2,3',
-            'role' => 'USER',
-            'created_at' => now(),
-            'updated_at' => now()
+            [
+                'id' => 1,
+                'name' => 'John Admin',
+                'email' => 'opaverifyadmin@mailforspam.com',
+                'username' => 'admin',
+                'password' => Hash::make('Admin'),
+                'enabled_payment_methods' => '1,2,3',
+                'role' => 'ADMIN',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'id' => 2,
+                'name' => 'John Moderator',
+                'email' => 'opaverifymoderator@mailforspam.com',
+                'username' => 'moderator',
+                'password' => Hash::make('Moderator'),
+                'enabled_payment_methods' => '1,2,3',
+                'role' => 'MODERATOR',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'id' => 3,
+                'name' => 'John User',
+                'email' => 'opaverifyuser@mailforspam.com',
+                'username' => 'user',
+                'password' => Hash::make('User'),
+                'enabled_payment_methods' => '1,2,3',
+                'role' => 'USER',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
         ]);
     }
 }
