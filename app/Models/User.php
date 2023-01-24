@@ -67,18 +67,23 @@ class User extends Authenticatable
 
     public function orders()
     {
-        return $this->hasMany('App\\Order');
+        return $this->hasMany(OpaSocial\Order::class);
+    }
+
+    public function currency()
+    {
+        return $this->hasOne(Currency::class);
     }
 
     public function adminmessages()
     {
-        return $this->hasMany('App\\AdminMessage', 'user_id', 'id');
+        return $this->hasMany('AdminMessage', 'user_id', 'id');
     }
 
-    public function getStatusAttribute($status)
-    {
-        return title_case($status);
-    }
+    // public function getStatusAttribute($status)
+    // {
+    //     return title_case($status);
+    // }
 
     public function getlastLoginAttribute($date)
     {
@@ -100,7 +105,7 @@ class User extends Authenticatable
     }
     public function group()
     {
-        return $this->hasOne('App\Group', 'id', 'group_id');
+        return $this->hasOne(Group::class, 'id', 'group_id');
     }
     public function verifyUser()
     {

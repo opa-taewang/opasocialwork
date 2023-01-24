@@ -997,7 +997,7 @@ body[data-sidebar=colored].vertical-collpsed .vertical-menu #sidebar-menu ul li 
 
 @media (min-width: 1200px) {
   body[data-layout=horizontal] .container-fluid,
-body[data-layout=horizontal] .navbar-header {
+  body[data-layout=horizontal] .navbar-header {
     max-width: 85%;
   }
 }
@@ -2100,17 +2100,17 @@ body[data-layout=horizontal][data-layout-size=boxed] .container-fluid, body[data
 
 @media print {
   .vertical-menu,
-.right-bar,
-.page-title-box,
-.navbar-header,
-.footer {
+  .right-bar,
+  .page-title-box,
+  .navbar-header,
+  .footer {
     display: none !important;
   }
   .card-body,
-.main-content,
-.right-bar,
-.page-content,
-body {
+  .main-content,
+  .right-bar,
+  .page-content,
+  body {
     padding: 0;
     margin: 0;
   }
@@ -2502,8 +2502,8 @@ input[type=checkbox].tui-full-calendar-checkbox-round + span {
 }
 @media (max-width: 767.98px) {
   .fc .fc-toolbar .fc-left,
-.fc .fc-toolbar .fc-right,
-.fc .fc-toolbar .fc-center {
+  .fc .fc-toolbar .fc-right,
+  .fc .fc-toolbar .fc-center {
     float: none;
     display: block;
     text-align: center;

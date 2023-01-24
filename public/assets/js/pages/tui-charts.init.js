@@ -10,41 +10,40 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Tui charts init Js File
 */
+
 // get colors array from the string
 function getChartColorsArray(chartId) {
   if (document.getElementById(chartId) !== null) {
-      var colors = document.getElementById(chartId).getAttribute("data-colors");
-      
-      if (colors) {
-          colors = JSON.parse(colors);
-          return colors.map(function (value) {
-              var newValue = value.replace(" ", "");
-              if (newValue.indexOf(",") === -1) {
-                  var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
-                  
-                  if (color){
-                    color = color.replace(" ", "");
-                    return color;
-                  }
-                  else return newValue;;
-              } else {
-                  var val = value.split(',');
-                  if (val.length == 2) {
-                      var rgbaColor = getComputedStyle(document.documentElement).getPropertyValue(val[0]);
-                      rgbaColor = "rgba(" + rgbaColor + "," + val[1] + ")";
-                      return rgbaColor;
-                  } else {
-                      return newValue;
-                  }
-              }
-          });
-      }
+    var colors = document.getElementById(chartId).getAttribute("data-colors");
+    if (colors) {
+      colors = JSON.parse(colors);
+      return colors.map(function (value) {
+        var newValue = value.replace(" ", "");
+        if (newValue.indexOf(",") === -1) {
+          var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
+          if (color) {
+            color = color.replace(" ", "");
+            return color;
+          } else return newValue;
+          ;
+        } else {
+          var val = value.split(',');
+          if (val.length == 2) {
+            var rgbaColor = getComputedStyle(document.documentElement).getPropertyValue(val[0]);
+            rgbaColor = "rgba(" + rgbaColor + "," + val[1] + ")";
+            return rgbaColor;
+          } else {
+            return newValue;
+          }
+        }
+      });
+    }
   }
-} // Bar charts
+}
 
+// Bar charts
 
 var barChartColors = getChartColorsArray("bar-charts");
-
 if (barChartColors) {
   var barChartWidth = $("#bar-charts").width();
   var container = document.getElementById('bar-charts');
@@ -122,17 +121,16 @@ if (barChartColors) {
   options.theme = 'myTheme';
   var barChart = tui.chart.barChart(container, data, options);
 }
-
 $(window).resize(function () {
   barChartWidth = $("#bar-charts").width();
   barChart.resize({
     width: barChartWidth,
     height: 350
   });
-}); // column charts
+});
 
+// column charts
 var columnChartColors = getChartColorsArray("column-charts");
-
 if (columnChartColors) {
   var columnChartWidth = $("#column-charts").width();
   var container = document.getElementById('column-charts');
@@ -207,23 +205,24 @@ if (columnChartColors) {
     series: {
       colors: columnChartColors
     }
-  }; // For apply theme
+  };
+
+  // For apply theme
 
   tui.chart.registerTheme('myTheme', theme);
   options.theme = 'myTheme';
   var columnChart = tui.chart.columnChart(container, data, options);
 }
-
 $(window).resize(function () {
   columnChartWidth = $("#column-charts").width();
   columnChart.resize({
     width: columnChartWidth,
     height: 350
   });
-}); // Line charts
+});
 
+// Line charts
 var lineChartColors = getChartColorsArray("line-charts");
-
 if (lineChartColors) {
   var lineChartWidth = $("#line-charts").width();
   var container = document.getElementById('line-charts');
@@ -305,17 +304,17 @@ if (lineChartColors) {
   options.theme = 'myTheme';
   var lineChart = tui.chart.lineChart(container, data, options);
 }
-
 $(window).resize(function () {
   lineChartWidth = $("#line-charts").width();
   lineChart.resize({
     width: lineChartWidth,
     height: 350
   });
-}); // Area charts
+});
+
+// Area charts
 
 var areaChartColors = getChartColorsArray("area-charts");
-
 if (areaChartColors) {
   var areaChartWidth = $("#area-charts").width();
   var container = document.getElementById('area-charts');
@@ -393,23 +392,25 @@ if (areaChartColors) {
     series: {
       colors: areaChartColors
     }
-  }; // For apply theme
+  };
+
+  // For apply theme
 
   tui.chart.registerTheme('myTheme', theme);
   options.theme = 'myTheme';
   var areaChart = tui.chart.areaChart(container, data, options);
 }
-
 $(window).resize(function () {
   areaChartWidth = $("#area-charts").width();
   areaChart.resize({
     width: areaChartWidth,
     height: 350
   });
-}); // Radial charts
+});
+
+// Radial charts
 
 var radialChartColors = getChartColorsArray("radial-charts");
-
 if (radialChartColors) {
   var radialChartWidth = $("#radial-charts").width();
   var container = document.getElementById('radial-charts');
@@ -485,23 +486,24 @@ if (radialChartColors) {
     series: {
       colors: radialChartColors
     }
-  }; // For apply theme
+  };
+
+  // For apply theme
 
   tui.chart.registerTheme('myTheme', theme);
   options.theme = 'myTheme';
   var radialChart = tui.chart.radialChart(container, data, options);
 }
-
 $(window).resize(function () {
   radialChartWidth = $("#radial-charts").width();
   radialChart.resize({
     width: radialChartWidth,
     height: 350
   });
-}); // Bubble chart
+});
 
+// Bubble chart
 var bubbleChartColors = getChartColorsArray("bubble-charts");
-
 if (bubbleChartColors) {
   var bubbleChartWidth = $("#bubble-charts").width();
   var container = document.getElementById('bubble-charts');
@@ -931,12 +933,10 @@ if (bubbleChartColors) {
       format: function format(value, chartType, areaType, valueType) {
         if (valueType === 'r' || valueType === 'x') {
           value = tui.chart.renderUtil.formatToComma(value);
-
           if (valueType === 'x') {
             value = '$' + value;
           }
         }
-
         return value;
       }
     },
@@ -992,23 +992,24 @@ if (bubbleChartColors) {
     series: {
       colors: bubbleChartColors
     }
-  }; // For apply theme
+  };
+  // For apply theme
 
   tui.chart.registerTheme('myTheme', theme);
   options.theme = 'myTheme';
   var bubbleChart = tui.chart.bubbleChart(container, data, options);
 }
-
 $(window).resize(function () {
   bubbleChartWidth = $("#bubble-charts").width();
   bubbleChart.resize({
     width: bubbleChartWidth,
     height: 350
   });
-}); // Scatter chart
+});
+
+// Scatter chart
 
 var scatterChartColors = getChartColorsArray("bubble-charts");
-
 if (scatterChartColors) {
   var scatterChartWidth = $("#scatter-charts").width();
   var container = document.getElementById('scatter-charts');
@@ -2599,23 +2600,25 @@ if (scatterChartColors) {
     series: {
       colors: scatterChartColors
     }
-  }; // For apply theme
+  };
+
+  // For apply theme
 
   tui.chart.registerTheme('myTheme', theme);
   options.theme = 'myTheme';
   var scatterChart = tui.chart.scatterChart(container, data, options);
 }
-
 $(window).resize(function () {
   scatterChartWidth = $("#scatter-charts").width();
   scatterChart.resize({
     width: scatterChartWidth,
     height: 350
   });
-}); // Pie charts
+});
+
+// Pie charts
 
 var pieChartColors = getChartColorsArray("pie-charts");
-
 if (pieChartColors) {
   var pieChartWidth = $("#pie-charts").width();
   var container = document.getElementById('pie-charts');
@@ -2669,23 +2672,25 @@ if (pieChartColors) {
     series: {
       colors: pieChartColors
     }
-  }; // For apply theme
+  };
+
+  // For apply theme
 
   tui.chart.registerTheme('myTheme', theme);
   options.theme = 'myTheme';
   var pieChart = tui.chart.pieChart(container, data, options);
 }
-
 $(window).resize(function () {
   pieChartWidth = $("#pie-charts").width();
   pieChart.resize({
     width: pieChartWidth,
     height: 350
   });
-}); // Donut pie chart
+});
+
+// Donut pie chart
 
 var donutPieChartColors = getChartColorsArray("donut-charts");
-
 if (donutPieChartColors) {
   var donutpieChartWidth = $("#donut-charts").width();
   var container = document.getElementById('donut-charts');
@@ -2718,7 +2723,6 @@ if (donutPieChartColors) {
           // formatting at series area
           value = value + '%';
         }
-
         return value;
       }
     },
@@ -2758,23 +2762,24 @@ if (donutPieChartColors) {
         fontFamily: 'sans-serif'
       }
     }
-  }; // For apply theme
+  };
+
+  // For apply theme
 
   tui.chart.registerTheme('myTheme', theme);
   options.theme = 'myTheme';
   var donutChart = tui.chart.pieChart(container, data, options);
 }
-
 $(window).resize(function () {
   donutpieChartWidth = $("#donut-charts").width();
   donutChart.resize({
     width: donutpieChartWidth,
     height: 350
   });
-}); // Heatmap chart
+});
 
+// Heatmap chart
 var heatMapChartColors = getChartColorsArray("heatmap-charts");
-
 if (heatMapChartColors) {
   var heatmapchartsWidth = $("#heatmap-charts").width();
   var container = document.getElementById('heatmap-charts');
@@ -2846,23 +2851,25 @@ if (heatMapChartColors) {
       overColor: heatMapChartColors[1],
       borderColor: heatMapChartColors[2]
     }
-  }; // For apply theme
+  };
+
+  // For apply theme
 
   tui.chart.registerTheme('myTheme', theme);
   options.theme = 'myTheme';
   var heatmapChart = tui.chart.heatmapChart(container, data, options);
 }
-
 $(window).resize(function () {
   heatmapChartChartWidth = $("#heatmap-charts").width();
   heatmapChart.resize({
     width: heatmapChartChartWidth,
     height: 350
   });
-}); // Treemap chart
+});
+
+// Treemap chart
 
 var treemapChartColors = getChartColorsArray("treemap-charts");
-
 if (treemapChartColors) {
   var treemapchartsWidth = $("#treemap-charts").width();
   var container = document.getElementById('treemap-charts');
@@ -2946,23 +2953,24 @@ if (treemapChartColors) {
       borderColor: 'rgba(255, 255, 255, 0.4)',
       borderWidth: 4
     }
-  }; // For apply theme
+  };
+
+  // For apply theme
 
   tui.chart.registerTheme('myTheme', theme);
   options.theme = 'myTheme';
   var treemapChart = tui.chart.treemapChart(container, data, options);
 }
-
 $(window).resize(function () {
   treemapChartChartWidth = $("#treemap-charts").width();
   treemapChart.resize({
     width: treemapChartChartWidth,
     height: 350
   });
-}); // Map charts
+});
 
+// Map charts
 var mapChartColors = getChartColorsArray("map-charts");
-
 if (mapChartColors) {
   var mapchartsWidth = $("#map-charts").width();
   var container = document.getElementById('map-charts');
@@ -3151,23 +3159,24 @@ if (mapChartColors) {
       overColor: mapChartColors[1],
       borderColor: mapChartColors[2]
     }
-  }; // For apply theme
+  };
+
+  // For apply theme
 
   tui.chart.registerTheme('myTheme', theme);
   options.theme = 'myTheme';
   var mapChart = tui.chart.mapChart(container, data, options);
 }
-
 $(window).resize(function () {
   mapChartChartWidth = $("#map-charts").width();
   mapChart.resize({
     width: mapChartChartWidth,
     height: 350
   });
-}); // Boxplot charts
+});
 
+// Boxplot charts
 var boxPlotChartColors = getChartColorsArray("boxplot-charts");
-
 if (boxPlotChartColors) {
   var boxplotchartsWidth = $("#boxplot-charts").width();
   var container = document.getElementById('boxplot-charts');
@@ -3241,23 +3250,24 @@ if (boxPlotChartColors) {
     series: {
       colors: boxPlotChartColors
     }
-  }; // For apply theme
+  };
+
+  // For apply theme
 
   tui.chart.registerTheme('myTheme', theme);
   options.theme = 'myTheme';
   var boxplotChart = tui.chart.boxplotChart(container, data, options);
 }
-
 $(window).resize(function () {
   boxplotChartChartWidth = $("#boxplot-charts").width();
   boxplotChart.resize({
     width: boxplotChartChartWidth,
     height: 350
   });
-}); // Bullet charts
+});
 
+// Bullet charts
 var bulletChartColors = getChartColorsArray("bullet-charts");
-
 if (bulletChartColors) {
   var bulletchartsWidth = $("#bullet-charts").width();
   var container = document.getElementById('bullet-charts');
@@ -3348,13 +3358,14 @@ if (bulletChartColors) {
         color: '#556ee6'
       }]
     }
-  }; // For apply theme
+  };
+
+  // For apply theme
 
   tui.chart.registerTheme('myTheme', theme);
   options.theme = 'myTheme';
   var bulletChart = tui.chart.bulletChart(container, data, options);
 }
-
 $(window).resize(function () {
   bulletChartWidth = $("#bullet-charts").width();
   bulletChart.resize({

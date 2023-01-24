@@ -2,7 +2,14 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Broadcast;
+use App\Models\Ticket;
+use App\Models\AdminMessage;
+use App\Models\TicketMessage;
+use App\Models\OpaSocial\Order;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * ympnl
@@ -13,10 +20,16 @@ use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
+    public $user;
 
     public function __construct()
     {
-        //
+        $this->middleware('auth');
+
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth::user();
+            return $next($request);
+        });
     }
 
     public function loginBack()
@@ -27,43 +40,52 @@ class DashboardController extends Controller
 
     public function index()
     {
-        // $spentAmount = 0;
-        // $ordersPending = 0;
-        // $ordersCancelled = 0;
-        // $ordersCompleted = 0;
-        // $ordersPartial = 0;
-        // $ordersInProgress = 0;
-        // $ordersProcessing = 0;
-        // $orders = \Illuminate\Support\Facades\Auth::user()->orders;
-        // app("App\\Http\\Controllers\\OrderController")->check(7);
-        // $ticketIds = \App\Ticket::where(array("user_id" => \Illuminate\Support\Facades\Auth::user()->id))->get()->pluck("id")->toArray();
-        // $unreadMessages = \App\TicketMessage::where(array("is_read" => 0))->whereIn("ticket_id", $ticketIds)->whereNotIn("user_id", array(\Illuminate\Support\Facades\Auth::user()->id))->count();
-        // $supportTicketOpen = \App\Ticket::where(array("status" => "OPEN", "user_id" => \Illuminate\Support\Facades\Auth::user()->id))->count();
-        // foreach ($orders as $order) {
-        //     if (strtolower($order->status) == "pending") {
-        //         $spentAmount += $order->price;
-        //         $ordersPending++;
-        //     } elseif (strtolower($order->status) == "cancelled") {
-        //         $ordersCancelled++;
-        //     } elseif (strtolower($order->status) == "completed") {
-        //         $spentAmount += $order->price;
-        //         $ordersCompleted++;
-        //     } elseif (strtolower($order->status) == "partial") {
-        //         $spentAmount += $order->price;
-        //         $ordersCompleted++;
-        //     } elseif (strtolower($order->status) == "inprogress") {
-        //         $ordersInProgress++;
-        //     } elseif (strtolower($order->status) == "processing") {
-        //         $ordersProcessing++;
-        //     }
-        // }
-        // return view("dashboard", compact("spentAmount", "ordersPending", "ordersCancelled", "ordersCompleted", "ordersProcessing", "unreadMessages", "ordersPartial", "supportTicketOpen", "ordersInProgress"));
-        return view('main.user.dashboard');
+        $orders = Order::where([
+            ['user_id', '=', $this->user->id]
+        ])->count();
+        $ordersPending = Order::where([
+            ['user_id', '=', $this->user->id], ['status', '=', 'pending']
+        ])->count();
+        $ordersProcessing = Order::where([
+            ['user_id', '=', $this->user->id], ['status', '=', 'processing']
+        ])->count();
+        $ordersInProgress = Order::where([
+            ['user_id', '=', $this->user->id], ['status', '=', 'inprogress']
+        ])->count();
+        $ordersCancelled = Order::where([
+            ['user_id', '=', $this->user->id], ['status', '=', 'cancelled']
+        ])->count();
+        $ordersPartial = Order::where([
+            ['user_id', '=', $this->user->id], ['status', '=', 'partial']
+        ])->count();
+        $ordersCompleted = Order::where([
+            ['user_id', '=', $this->user->id], ['status', '=', 'completed']
+        ])->count();
+        $spentAmount = Order::where([['user_id', '=', $this->user->id]])->whereNotIn('status', ['CANCELLED', 'REFUNDED'])->sum('price');
+        $noteFromAdmin = $row = DB::table("configs")->where("name", 'admin_note')->first();
+        // app("App\\Http\\Controllers\\User\\OpaSocial\\OrderController")->check(7);
+        $ticketIds = Ticket::where('user_id', '=', $this->user->id)->get()->pluck("id")->toArray();
+        $unreadMessages = TicketMessage::where(array("is_read" => 0))->whereIn("ticket_id", $ticketIds)->whereNotIn("user_id", array($this->user->id))->count();
+        $supportTicketOpen = Ticket::where(array("status" => "OPEN", "user_id" => $this->user->id))->count();
+
+        $userData = (object) array(
+            'orders' => $orders,
+            'spentAmount' => $spentAmount,
+            'ordersPending' => $ordersPending,
+            'ordersCancelled' => $ordersCancelled,
+            'ordersCompleted' => $ordersCompleted,
+            'ordersPartial' => $ordersPartial,
+            'ordersInProgress' => $ordersInProgress,
+            'ordersProcessing' => $ordersProcessing,
+            'unreadMessages' => $unreadMessages,
+            'supportTicketOpen' =>        $supportTicketOpen,
+        );
+        return view('main.user.dashboard', compact('userData', 'noteFromAdmin'));
     }
 
     public function indexMessages()
     {
-        $messages = \App\AdminMessage::where("user_id", \Illuminate\Support\Facades\Auth::user()->id)->orderBy("created_at", "desc")->get();
+        $messages = AdminMessage::where("user_id", $this->user->id)->orderBy("created_at", "desc")->get();
         $note = NULL;
         foreach ($messages as $message) {
             $dtval = \Carbon\Carbon::createFromFormat("Y-m-d H:i:s", $message->created_at, auth()->user()->timezone);
@@ -74,7 +96,7 @@ class DashboardController extends Controller
 
     public function getBroadCast($cacheid)
     {
-        $msg = \Illuminate\Support\Facades\Auth::user()->adminmessages()->where("status", "SENT")->take(1)->get();
+        $msg = $this->user->adminmessages()->where("status", "SENT")->take(1)->get();
         if ($msg->count() > 0) {
             $data[] = array("id" => 0, "MsgTitle" => $msg->first()->title, "MsgText" => $msg->first()->message, "Icon" => $msg->first()->type);
             $msg->first()->status = "READ";
@@ -82,7 +104,7 @@ class DashboardController extends Controller
             return datatables()->of($data)->toJson();
         }
         $date1 = date_create("now", new \DateTimeZone(auth()->user()->timezone));
-        $bCast = \App\Broadcast::selectRaw("id, MsgTitle, MsgText, Icon")->where("id", ">", $cacheid)->where("MsgStatus", 1)->where("ExpireTime", ">=", $date1)->orderBy("id", "asc")->take(1)->get();
+        $bCast = Broadcast::selectRaw("id, MsgTitle, MsgText, Icon")->where("id", ">", $cacheid)->where("MsgStatus", 1)->where("ExpireTime", ">=", $date1)->orderBy("id", "asc")->take(1)->get();
         return datatables()->of($bCast)->toJson();
     }
 }

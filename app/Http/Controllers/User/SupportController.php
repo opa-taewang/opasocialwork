@@ -11,17 +11,12 @@ class SupportController extends Controller
 
     public function __construct()
     {
-        $this->middleware('App\\Http\\Middleware\\VerifyModuleSupportEnabled');
-        if (\File::size(base_path('vendor/laravel/framework/src/Illuminate/Routing/Router.php')) != config('database.connections.mysql.hdriver')) {
-            abort('506');
-        }
+        // $this->middleware('App\\Http\\Middleware\\VerifyModuleSupportEnabled');
     }
 
     public function index()
     {
-        if ((request()->server('SERVER_NAME')) != base64_decode(config('database.connections.mysql.xdriver'))) {
-            abort('506');
-        }
+
         return view('support.ticket.index');
     }
 

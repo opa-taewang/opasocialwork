@@ -9,16 +9,12 @@ class GroupController extends Controller
     // @ioncube.dynamickey fn("world") -> "ITSMYWORLD world" RANDOM
     public function index()
     {
-        if ((request()->server('SERVER_NAME')) != base64_decode(config('database.connections.mysql.xdriver'))) {
-            abort('506');
-        }
+
         return view("admin.groups.index");
     }
     public function indexData()
     {
-        if ((request()->server('SERVER_NAME')) != base64_decode(config('database.connections.mysql.xdriver'))) {
-            abort('506');
-        }
+
         $groups = \App\Group::all();
         return datatables()->of($groups)->editColumn("price_percentage", function ($group) {
             return $group->price_percentage . ' %';

@@ -10,6 +10,7 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Profile Init Js File
 */
+
 var options = {
   chart: {
     height: 330,

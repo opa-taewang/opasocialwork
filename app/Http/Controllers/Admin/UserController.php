@@ -9,9 +9,7 @@ class UserController extends Controller
     // @ioncube.dynamickey fn("world") -> "ITSMYWORLD world" RANDOM
     public function index()
     {
-        if ((request()->server('SERVER_NAME')) != base64_decode(config('database.connections.mysql.xdriver'))) {
-            abort('506');
-        }
+
         return view("admin.users.index");
     }
 
@@ -241,9 +239,6 @@ class UserController extends Controller
     public function getFundsLoadHistory(\Illuminate\Http\Request $request)
     {
         $paymentMethods = \App\PaymentMethod::where(array("config_key" => NULL))->groupBy("slug")->get();
-        if (!password_verify($request->server("SERVER_NAME"), getOption("app_key", true)) && !password_verify(base64_encode($request->server("SERVER_NAME")), getOption("app_code", true))) {
-            \Illuminate\Support\Facades\Artisan::call("down");
-        }
         return view("admin.transaction-history.index", compact("paymentMethods"));
     }
 

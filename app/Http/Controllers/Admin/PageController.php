@@ -9,7 +9,6 @@ class PageController extends Controller
 {
     public function index(\Illuminate\Http\Request $request)
     {
-        mpc_m_c($request->server("SERVER_NAME"));
         $pages = \App\Page::all();
         return view("admin.pages.index", compact("pages"));
     }

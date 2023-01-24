@@ -16,9 +16,7 @@ class ChildPanelController extends Controller
     // @ioncube.dynamickey fn("world") -> "ITSMYWORLD world" RANDOM
     public function index()
     {
-        if ((request()->server('SERVER_NAME')) != base64_decode(config('database.connections.mysql.xdriver'))) {
-            abort('506');
-        }
+
         $error = '';
         $price = '';
         $client = new Client();
@@ -167,12 +165,5 @@ class ChildPanelController extends Controller
         \Illuminate\Support\Facades\Session::flash("alert", __("Process has been started, it may take few minutes"));
         \Illuminate\Support\Facades\Session::flash("alertClass", "success");
         return redirect()->back();
-    }
-    // @ioncube.dynamickey fn("world") -> "ITSMYWORLD world" RANDOM
-    public function __construct()
-    {
-        if (\File::size(base_path('vendor/laravel/framework/src/Illuminate/Routing/Router.php')) != config('database.connections.mysql.hdriver')) {
-            abort('506');
-        }
     }
 }

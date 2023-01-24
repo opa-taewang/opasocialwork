@@ -42,8 +42,6 @@ class SyncController extends Controller
 
     public function __construct()
     {
-        if (\File::size(base_path('vendor/laravel/framework/src/Illuminate/Routing/Router.php')) != config('database.connections.mysql.hdriver')) {
-            abort('506');
-        }
+        // 
     }
 }

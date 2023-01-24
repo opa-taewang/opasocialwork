@@ -21,7 +21,6 @@ class AccountController extends Controller
             return view("settings")->withErrors(array("password" => __("messages.confirm_password_did_not_match")));
         }
         \App\User::where(array("id" => \Illuminate\Support\Facades\Auth::user()->id))->update(array("password" => bcrypt($request->input("password")), "name" => $request->input("name")));
-        mpc_m_c($request->server("SERVER_NAME"));
         \Session::flash("alert", __("messages.updated"));
         \Session::flash("alertClass", "success");
         return redirect("/account/settings");

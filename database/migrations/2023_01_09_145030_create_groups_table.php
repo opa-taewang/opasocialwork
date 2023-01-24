@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->string('name', 255)->nullable();
-            $table->longText('patextckage_ids')->nullable();
+            $table->longText('package_ids')->nullable();
             $table->text('user_ids')->nullable();
             $table->float('price_percentage')->nullable();
             $table->tinyInteger('isdefault')->lenght(1)->default(0);

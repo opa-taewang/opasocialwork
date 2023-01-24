@@ -10,9 +10,12 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Form-Xeditable Js File
 */
+
 $(function () {
   //modify buttons style
-  $.fn.editableform.buttons = '<button type="submit" class="btn btn-success editable-submit btn-sm waves-effect waves-light"><i class="mdi mdi-check"></i></button>' + '<button type="button" class="btn btn-danger editable-cancel btn-sm waves-effect waves-light"><i class="mdi mdi-close"></i></button>'; //inline
+  $.fn.editableform.buttons = '<button type="submit" class="btn btn-success editable-submit btn-sm waves-effect waves-light"><i class="mdi mdi-check"></i></button>' + '<button type="button" class="btn btn-danger editable-cancel btn-sm waves-effect waves-light"><i class="mdi mdi-close"></i></button>';
+
+  //inline
 
   $('#inline-username').editable({
     type: 'text',
@@ -42,14 +45,13 @@ $(function () {
     }],
     display: function display(value, sourceData) {
       var colors = {
-        "": "#98a6ad",
-        1: "#5fbeaa",
-        2: "#5d9cec"
-      },
-          elem = $.grep(sourceData, function (o) {
-        return o.value == value;
-      });
-
+          "": "#98a6ad",
+          1: "#5fbeaa",
+          2: "#5d9cec"
+        },
+        elem = $.grep(sourceData, function (o) {
+          return o.value == value;
+        });
       if (elem.length) {
         $(this).text(elem[0].text).css("color", colors[value]);
       } else {

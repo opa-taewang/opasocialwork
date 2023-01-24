@@ -51,9 +51,7 @@ class HomeController extends Controller
     // @ioncube.dynamickey fn("world") -> "ITSMYWORLD world" RANDOM
     public function index()
     {
-        if ((request()->server('SERVER_NAME')) != base64_decode(config('database.connections.mysql.xdriver'))) {
-            abort('506');
-        }
+
 
         if (\Auth::check()) {
             return redirect('/order/new');
@@ -69,9 +67,7 @@ class HomeController extends Controller
 
     public function showServices()
     {
-        if ((request()->server('SERVER_NAME')) != base64_decode(config('database.connections.mysql.xdriver'))) {
-            abort('506');
-        }
+
 
 
         if (\Auth::check()) {
@@ -337,9 +333,7 @@ class HomeController extends Controller
     }
     public function changeCurrency(Request $request)
     {
-        if ((request()->server('SERVER_NAME')) != base64_decode(config('database.connections.mysql.xdriver'))) {
-            abort('506');
-        }
+
         $id = Auth::user()->id;
         $user = User::findorFail($id);
         echo $request->input('locale');

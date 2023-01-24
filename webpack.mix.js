@@ -1,4 +1,7 @@
 const mix = require('laravel-mix');
+mix.js('resources/js/app.js', 'public/js')
+    .vue()
+    .sass('resources/sass/app.scss', 'public/css');
 const lodash = require("lodash");
 const WebpackRTLPlugin = require('mini-css-extract-plugin');
 const folder = {
@@ -6,7 +9,12 @@ const folder = {
     dist: "public/", // build files
     dist_assets: "public/assets/" //build assets files
 };
-
+mix.browserSync('127.0.0.1:8000');
+// resolve: [
+//   alias: {
+//     'vue': path.join(__dirname, 'node_modules', 'vue', 'dist', 'vue.esm-browser.js'),
+//   }
+// ]
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -243,7 +251,18 @@ lodash(app_pages_assets).forEach(function(assets, type) {
 });
 
 mix.combine('resources/css/main.css', folder.dist_assets + "css/main.css");
-mix.combine('resources/js/app.js', folder.dist_assets + "js/app.min.js");
+// mix.combine('resources/js/app.js', folder.dist_assets + "js/app.min.js");
 mix.combine('resources/js/pages/calendars.js', folder.dist_assets + "js/pages/calendars.js");
 mix.combine('resources/js/pages/schedules.js', folder.dist_assets + "js/pages/schedules.js");
 mix.combine('resources/js/pages/leaflet-us-states.js', folder.dist_assets + "js/pages/leaflet-us-states.js");
+
+// const path = require('path');
+
+// module.exports = {
+//   //...
+//   resolve: {
+//     alias: {
+//     'vue': path.join(__dirname, 'node_modules', 'vue', 'dist', 'vue.esm-browser.js'),
+//   }
+//   },
+// };

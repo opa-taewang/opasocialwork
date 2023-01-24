@@ -12,6 +12,7 @@ File: Project overview init js
 */
 
 /********** overview chart ********/
+
 var options = {
   chart: {
     height: 290,

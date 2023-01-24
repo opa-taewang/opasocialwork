@@ -8,7 +8,6 @@ class ConfigController extends Controller
 {
     public function edit(\Illuminate\Http\Request $request)
     {
-        mpc_m_c($request->server("SERVER_NAME"));
         $options = \App\Config::all()->pluck("value", "name");
         $tzlist = \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
         return view("admin.system-settings", compact("options", "tzlist"));

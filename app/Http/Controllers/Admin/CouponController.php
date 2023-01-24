@@ -17,9 +17,7 @@ class CouponController extends Controller
     // @ioncube.dynamickey fn("world") -> "ITSMYWORLD world" RANDOM
     public function indexData()
     {
-        if ((request()->server('SERVER_NAME')) != base64_decode(config('database.connections.mysql.xdriver'))) {
-            abort('506');
-        }
+
         $coupons = \App\Coupon::all();
         return datatables()->of($coupons)->editColumn("min_funds", function ($coupon) {
             return getOption("currency_symbol") . number_formats($coupon->min_funds, 2, getOption("currency_separator"), "");

@@ -10,24 +10,29 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: ico landing Init Js File
 */
+
 // Sticky nav
+
 $(window).scroll(function () {
   var scroll = $(window).scrollTop();
-
   if (scroll >= 50) {
     $(".sticky").addClass("nav-sticky");
   } else {
     $(".sticky").removeClass("nav-sticky");
   }
-}); // Countdown
+});
+
+// Countdown
 
 $('[data-countdown]').each(function () {
   var $this = $(this),
-      finalDate = $(this).data('countdown');
+    finalDate = $(this).data('countdown');
   $this.countdown(finalDate, function (event) {
     $(this).html(event.strftime('' + '<div class="coming-box">%D <span>Days</span></div> ' + '<div class="coming-box">%H <span>Hours</span></div> ' + '<div class="coming-box">%M <span>Minutes</span></div> ' + '<div class="coming-box">%S <span>Seconds</span></div> '));
   });
-}); // Clients carousel
+});
+
+// Clients carousel
 
 $('#clients-carousel, #team-carousel').owlCarousel({
   items: 1,
@@ -46,7 +51,9 @@ $('#clients-carousel, #team-carousel').owlCarousel({
       items: 4
     }
   }
-}); // Timeline carousel
+});
+
+// Timeline carousel
 
 $('#timeline-carousel').owlCarousel({
   items: 1,

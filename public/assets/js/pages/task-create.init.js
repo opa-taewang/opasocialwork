@@ -10,6 +10,7 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Task Create Init Js File
 */
+
 $(document).ready(function () {
   'use strict';
 
@@ -51,7 +52,6 @@ $(document).ready(function () {
       }]
     });
   }
-
   window.outerRepeater = $('.outer-repeater').repeater({
     defaultValues: {
       'text-input': 'outer-default'

@@ -8,7 +8,7 @@ class SubscriptionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware("App\\Http\\Middleware\\VerifyModuleSubscriptionEnabled");
+        // $this->middleware("App\\Http\\Middleware\\VerifyModuleSubscriptionEnabled");
     }
 
     public function index()
@@ -35,7 +35,6 @@ class SubscriptionController extends Controller
 
     public function create(\Illuminate\Http\Request $request)
     {
-        mpc_m_c($request->server("SERVER_NAME"));
         $services = \App\Service::where(array("status" => "ACTIVE", "is_subscription_allowed" => 1))->get();
         return view("subscriptions.new", compact("services"));
     }

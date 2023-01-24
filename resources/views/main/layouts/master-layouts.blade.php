@@ -8,7 +8,7 @@
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ URL::asset('assets/images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
     @include('main.layouts.head-css')
 </head>
 
@@ -18,7 +18,7 @@
 
     <!-- Begin page -->
     <div id="layout-wrapper">
-        @include('main.layouts.horizontal')
+        {{-- @include('main.layouts.horizontal') --}}
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->

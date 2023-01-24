@@ -10,47 +10,45 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Flot chart init Js File
 */
+
 // get colors array from the string
 function getChartColorsArray(chartId) {
   if (document.getElementById(chartId) !== null) {
-      var colors = document.getElementById(chartId).getAttribute("data-colors");
-      
-      if (colors) {
-          colors = JSON.parse(colors);
-          return colors.map(function (value) {
-              var newValue = value.replace(" ", "");
-              if (newValue.indexOf(",") === -1) {
-                  var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
-                  
-                  if (color){
-                    color = color.replace(" ", "");
-                    return color;
-                  }
-                  else return newValue;;
-              } else {
-                  var val = value.split(',');
-                  if (val.length == 2) {
-                      var rgbaColor = getComputedStyle(document.documentElement).getPropertyValue(val[0]);
-                      rgbaColor = "rgba(" + rgbaColor + "," + val[1] + ")";
-                      return rgbaColor;
-                  } else {
-                      return newValue;
-                  }
-              }
-          });
-      }
+    var colors = document.getElementById(chartId).getAttribute("data-colors");
+    if (colors) {
+      colors = JSON.parse(colors);
+      return colors.map(function (value) {
+        var newValue = value.replace(" ", "");
+        if (newValue.indexOf(",") === -1) {
+          var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
+          if (color) {
+            color = color.replace(" ", "");
+            return color;
+          } else return newValue;
+          ;
+        } else {
+          var val = value.split(',');
+          if (val.length == 2) {
+            var rgbaColor = getComputedStyle(document.documentElement).getPropertyValue(val[0]);
+            rgbaColor = "rgba(" + rgbaColor + "," + val[1] + ")";
+            return rgbaColor;
+          } else {
+            return newValue;
+          }
+        }
+      });
+    }
   }
 }
-
 !function ($) {
   "use strict";
 
   var FlotChart = function FlotChart() {
     this.$body = $("body");
     this.$realData = [];
-  }; //creates plot graph
+  };
 
-
+  //creates plot graph
   FlotChart.prototype.createPlotGraph = function (selector, data1, data2, data3, labels, colors, borderColor, bgColor) {
     //shows tooltip
     function showTooltip(x, y, contents) {
@@ -60,7 +58,6 @@ function getChartColorsArray(chartId) {
         left: x + 5
       }).appendTo("body").fadeIn(200);
     }
-
     $.plot($(selector), [{
       data: data1,
       label: labels[0],
@@ -128,7 +125,9 @@ function getChartColorsArray(chartId) {
         defaultTheme: false
       }
     });
-  }, //end plot graph
+  },
+  //end plot graph
+
   //creates Pie Chart
   FlotChart.prototype.createPieGraph = function (selector, labels, datas, colors) {
     var data = [{
@@ -162,31 +161,29 @@ function getChartColorsArray(chartId) {
       }
     };
     $.plot($(selector), data, options);
-  }, //returns some random data
+  },
+  //returns some random data
   FlotChart.prototype.randomData = function () {
     var totalPoints = 300;
-    if (this.$realData.length > 0) this.$realData = this.$realData.slice(1); // Do a random walk
+    if (this.$realData.length > 0) this.$realData = this.$realData.slice(1);
 
+    // Do a random walk
     while (this.$realData.length < totalPoints) {
       var prev = this.$realData.length > 0 ? this.$realData[this.$realData.length - 1] : 50,
-          y = prev + Math.random() * 10 - 5;
-
+        y = prev + Math.random() * 10 - 5;
       if (y < 0) {
         y = 0;
       } else if (y > 100) {
         y = 100;
       }
-
       this.$realData.push(y);
-    } // Zip the generated y values with the x values
+    }
 
-
+    // Zip the generated y values with the x values
     var res = [];
-
     for (var i = 0; i < this.$realData.length; ++i) {
       res.push([i, this.$realData[i]]);
     }
-
     return res;
   }, FlotChart.prototype.createRealTimeGraph = function (selector, data, colors) {
     var plot = $.plot(selector, [data], {
@@ -245,7 +242,8 @@ function getChartColorsArray(chartId) {
       }
     });
     return plot;
-  }, //creates Pie Chart
+  },
+  //creates Pie Chart
   FlotChart.prototype.createDonutGraph = function (selector, labels, datas, colors) {
     var data = [{
       label: labels[0],
@@ -292,10 +290,10 @@ function getChartColorsArray(chartId) {
       }
     };
     $.plot($(selector), data, options);
-  }, //initializing various charts and components
+  },
+  //initializing various charts and components
   FlotChart.prototype.init = function () {
     var areaChartColors = getChartColorsArray("website-stats");
-
     if (areaChartColors) {
       //plot graph data
       var desktops = [[0, 50], [1, 130], [2, 80], [3, 70], [4, 180], [5, 105], [6, 250]];
@@ -306,47 +304,44 @@ function getChartColorsArray(chartId) {
       var borderColor = 'rgba(166, 176, 207, 0.1)';
       var bgColor = 'transparent';
       this.createPlotGraph("#website-stats", desktops, laptops, tablets, plabels, pcolors, borderColor, bgColor);
-    } //Pie graph data
-
-
+    }
+    //Pie graph data
     var pieChartColors = getChartColorsArray("pie-chart-container");
-
     if (pieChartColors) {
       var pielabels = ["Desktops", "Laptops", "Tablets"];
       var datas = [20, 30, 15];
       var colors = pieChartColors;
       this.createPieGraph("#pie-chart #pie-chart-container", pielabels, datas, colors);
-    } //real time data representation
+    }
 
-
+    //real time data representation
     var realTimeChartColors = getChartColorsArray("flotRealTime");
-
     if (realTimeChartColors) {
       var plot = this.createRealTimeGraph('#flotRealTime', this.randomData(), realTimeChartColors);
       plot.draw();
       var $this = this;
     }
-
     function updatePlot() {
-      plot.setData([$this.randomData()]); // Since the axes don't change, we don't need to call plot.setupGrid()
-
+      plot.setData([$this.randomData()]);
+      // Since the axes don't change, we don't need to call plot.setupGrid()
       plot.draw();
       setTimeout(updatePlot, $('html').hasClass('mobile-device') ? 1000 : 1000);
     }
+    updatePlot();
 
-    updatePlot(); //Donut pie graph data
-
+    //Donut pie graph data
     var donutChartColors = getChartColorsArray("donut-chart-container");
-
     if (donutChartColors) {
       var donutlabels = ["Desktops", "Laptops", "Tablets"];
       var donutdatas = [29, 20, 18];
       var donutcolors = ['#f0f1f4', '#556ee6', '#34c38f'];
       this.createDonutGraph("#donut-chart #donut-chart-container", donutlabels, donutdatas, donutcolors);
     }
-  }, //init flotchart
+  },
+  //init flotchart
   $.FlotChart = new FlotChart(), $.FlotChart.Constructor = FlotChart;
-}(window.jQuery), //initializing flotchart
+}(window.jQuery),
+//initializing flotchart
 function ($) {
   "use strict";
 

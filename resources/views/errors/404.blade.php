@@ -1,37 +1,55 @@
-@extends('main.layouts.components.breadcrumb')
+<!DOCTYPE html>
+<html lang="en">
 
-@section('title')
-    @lang('Error_404')
-@endsection
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-@section('body')
+	<!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/storage/images/icons/favicon.ico">
 
-    <body>
-    @endsection
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    @section('content')
+    <title>{{ config('app.name', 'darkcoinbank') }}</title>
 
-        <div class="account-pages my-5 pt-5">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="text-center mb-5">
-                            <h1 class="display-2 fw-medium">4<i class="bx bx-buoy bx-spin text-primary display-3"></i>4</h1>
-                            <h4 class="text-uppercase">Sorry, page not found</h4>
-                            <div class="mt-5 text-center">
-                                <a class="btn btn-primary waves-effect waves-light" href="index">Back to Dashboard</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-8 col-xl-6">
-                        <div>
-                            <img src="{{ URL::asset('/assets/images/error-img.png') }}" alt="" class="img-fluid">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <meta name="keywords" content="HTML5 Template"/>
+    <meta name="description" content="Porto - Bootstrap eCommerce Template">
+    <meta name="author" content="SW-THEMES">
 
-    @endsection
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+
+    <!-- Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{asset('custom/404.css')}}">
+
+	<!-- Google font -->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:700,900" rel="stylesheet">
+
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+		  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+		  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+</head>
+
+<body>
+
+	<div id="notfound">
+		<div class="notfound">
+			<div class="notfound-404">
+				<h1>404</h1>
+				<h2>Page not found</h2>
+			</div>
+			<a href="/">Homepage</a>
+		</div>
+	</div>
+
+</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+
+</html>

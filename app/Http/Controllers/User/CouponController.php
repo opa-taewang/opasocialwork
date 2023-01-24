@@ -21,9 +21,6 @@ class CouponController extends Controller
 
     public function showForm(\Illuminate\Http\Request $request)
     {
-        if ((request()->server('SERVER_NAME')) != base64_decode(config('database.connections.mysql.xdriver'))) {
-            abort('506');
-        }
 
         return view("payments.coupon");
     }

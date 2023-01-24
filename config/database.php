@@ -53,7 +53,7 @@ return [
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
-            'timezone' => env('APP_TIMEZONE', 'UTC'),
+            'timezone' => env('APP_TIMEZONE', '+1:00'),
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
             'prefix_indexes' => true,

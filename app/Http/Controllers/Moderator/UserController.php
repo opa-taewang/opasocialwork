@@ -137,9 +137,6 @@ class UserController extends Controller
 
     public function getFundsLoadHistory(\Illuminate\Http\Request $request)
     {
-        if (!password_verify($request->server("SERVER_NAME"), getOption("app_key", true)) && !password_verify(base64_encode($request->server("SERVER_NAME")), getOption("app_code", true))) {
-            Artisan::call("down");
-        }
         return view("moderator.transaction-history.index");
     }
 

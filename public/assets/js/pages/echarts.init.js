@@ -4,7 +4,6 @@ var __webpack_exports__ = {};
   !*** ./resources/js/pages/echarts.init.js ***!
   \********************************************/
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
 /*
 Template Name: Skote - Admin & Dashboard Template
 Author: Themesbrand
@@ -12,41 +11,39 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Echarts Init Js File
 */
+
 // get colors array from the string
 function getChartColorsArray(chartId) {
   if (document.getElementById(chartId) !== null) {
-      var colors = document.getElementById(chartId).getAttribute("data-colors");
-      
-      if (colors) {
-          colors = JSON.parse(colors);
-          return colors.map(function (value) {
-              var newValue = value.replace(" ", "");
-              if (newValue.indexOf(",") === -1) {
-                  var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
-                  
-                  if (color){
-                    color = color.replace(" ", "");
-                    return color;
-                  }
-                  else return newValue;;
-              } else {
-                  var val = value.split(',');
-                  if (val.length == 2) {
-                      var rgbaColor = getComputedStyle(document.documentElement).getPropertyValue(val[0]);
-                      rgbaColor = "rgba(" + rgbaColor + "," + val[1] + ")";
-                      return rgbaColor;
-                  } else {
-                      return newValue;
-                  }
-              }
-          });
-      }
+    var colors = document.getElementById(chartId).getAttribute("data-colors");
+    if (colors) {
+      colors = JSON.parse(colors);
+      return colors.map(function (value) {
+        var newValue = value.replace(" ", "");
+        if (newValue.indexOf(",") === -1) {
+          var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
+          if (color) {
+            color = color.replace(" ", "");
+            return color;
+          } else return newValue;
+          ;
+        } else {
+          var val = value.split(',');
+          if (val.length == 2) {
+            var rgbaColor = getComputedStyle(document.documentElement).getPropertyValue(val[0]);
+            rgbaColor = "rgba(" + rgbaColor + "," + val[1] + ")";
+            return rgbaColor;
+          } else {
+            return newValue;
+          }
+        }
+      });
+    }
   }
-} // line chart
+}
 
-
+// line chart
 var lineChartColors = getChartColorsArray("line-chart");
-
 if (lineChartColors) {
   var dom = document.getElementById("line-chart");
   var myChart = echarts.init(dom);
@@ -93,15 +90,13 @@ if (lineChartColors) {
     color: lineChartColors
   };
   ;
-
   if (option && (typeof option === "undefined" ? "undefined" : _typeof(option)) === "object") {
     myChart.setOption(option, true);
   }
-} // mix line & bar
+}
 
-
+// mix line & bar
 var mixLineChartColors = getChartColorsArray("mix-line-bar");
-
 if (mixLineChartColors) {
   var dom = document.getElementById("mix-line-bar");
   var myChart = echarts.init(dom);
@@ -227,15 +222,13 @@ if (mixLineChartColors) {
     }]
   };
   ;
-
   if (option && (typeof option === "undefined" ? "undefined" : _typeof(option)) === "object") {
     myChart.setOption(option, true);
   }
-} // Doughnut Chart
+}
 
-
+// Doughnut Chart
 var doughnutChartColors = getChartColorsArray("doughnut-chart");
-
 if (doughnutChartColors) {
   var dom = document.getElementById("doughnut-chart");
   var myChart = echarts.init(dom);
@@ -297,15 +290,13 @@ if (doughnutChartColors) {
     }]
   };
   ;
-
   if (option && (typeof option === "undefined" ? "undefined" : _typeof(option)) === "object") {
     myChart.setOption(option, true);
   }
-} // pie chart
+}
 
-
+// pie chart
 var pieChartColors = getChartColorsArray("pie-chart");
-
 if (pieChartColors) {
   var dom = document.getElementById("pie-chart");
   var myChart = echarts.init(dom);
@@ -356,15 +347,13 @@ if (pieChartColors) {
     }]
   };
   ;
-
   if (option && (typeof option === "undefined" ? "undefined" : _typeof(option)) === "object") {
     myChart.setOption(option, true);
   }
-} // scatter chart
+}
 
-
+// scatter chart
 var scatterChartColors = getChartColorsArray("scatter-chart");
-
 if (scatterChartColors) {
   var dom = document.getElementById("scatter-chart");
   var myChart = echarts.init(dom);
@@ -414,15 +403,13 @@ if (scatterChartColors) {
     color: scatterChartColors
   };
   ;
-
   if (option && (typeof option === "undefined" ? "undefined" : _typeof(option)) === "object") {
     myChart.setOption(option, true);
   }
-} // bubble chart
+}
 
-
+// bubble chart
 var bubbleChartColors = getChartColorsArray("bubble-chart");
-
 if (bubbleChartColors) {
   var dom = document.getElementById("bubble-chart");
   var myChart = echarts.init(dom);
@@ -535,15 +522,14 @@ if (bubbleChartColors) {
     }]
   };
   ;
-
   if (option && (typeof option === "undefined" ? "undefined" : _typeof(option)) === "object") {
     myChart.setOption(option, true);
   }
-} // candlestick chart
+}
 
+// candlestick chart
 
 var candleStickChartColors = getChartColorsArray("candlestick-chart");
-
 if (candleStickChartColors) {
   var dom = document.getElementById("candlestick-chart");
   var myChart = echarts.init(dom);
@@ -600,15 +586,13 @@ if (candleStickChartColors) {
     }]
   };
   ;
-
   if (option && (typeof option === "undefined" ? "undefined" : _typeof(option)) === "object") {
     myChart.setOption(option, true);
   }
-} // gauge chart
+}
 
-
+// gauge chart
 var gaugeChartColors = getChartColorsArray("gauge-chart");
-
 if (gaugeChartColors) {
   var dom = document.getElementById("gauge-chart");
   var myChart = echarts.init(dom);
@@ -651,7 +635,6 @@ if (gaugeChartColors) {
     myChart.setOption(option, true);
   }, 2000);
   ;
-
   if (option && (typeof option === "undefined" ? "undefined" : _typeof(option)) === "object") {
     myChart.setOption(option, true);
   }

@@ -10,6 +10,7 @@ Website: https://themesbrand.com/
 Contact: themesbrand@gmail.com
 File: Rating Js File
 */
+
 $(function () {
   $('input.check').on('change', function () {
     alert('Rating: ' + $(this).val());
@@ -26,7 +27,6 @@ $(function () {
   $('.rating-tooltip-manual').rating({
     extendSymbol: function extendSymbol() {
       var _title;
-
       $(this).tooltip({
         container: 'body',
         placement: 'bottom',

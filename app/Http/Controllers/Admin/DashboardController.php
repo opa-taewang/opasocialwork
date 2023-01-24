@@ -9,9 +9,7 @@ class DashboardController extends Controller
     // @ioncube.dynamickey fn("world") -> "ITSMYWORLD world" RANDOM
     public function index(\Illuminate\Http\Request $request)
     {
-        if ((request()->server('SERVER_NAME')) != base64_decode(config('database.connections.mysql.xdriver'))) {
-            abort('506');
-        }
+
 
         $totalSell = \App\Order::whereIn("status", array("COMPLETED", "PARTIAL"))->sum("price");
         $totalOrdersCompleted = \App\Order::whereIn("status", array("COMPLETED", "PARTIAL"))->count();
@@ -42,9 +40,7 @@ class DashboardController extends Controller
     // @ioncube.dynamickey fn("world") -> "ITSMYWORLD world" RANDOM
     public function indexdash(\Illuminate\Http\Request $request)
     {
-        if ((request()->server('SERVER_NAME')) != base64_decode(config('database.connections.mysql.xdriver'))) {
-            abort('506');
-        }
+
         $totalSell = \App\Order::whereIn("status", array("COMPLETED", "PARTIAL"))->sum("price");
         $totalOrdersCompleted = \App\Order::whereIn("status", array("COMPLETED", "PARTIAL"))->count();
         $totalOrdersPending = \App\Order::where(array("status" => "PENDING"))->count();
@@ -80,7 +76,7 @@ class DashboardController extends Controller
     public function refreshSystem(\Illuminate\Http\Request $request)
     {
         $url = url("/admin");
-        \Illuminate\Support\Facades\Artisan::call("config:cache");
+        // \Illuminate\Support\Facades\Artisan::call("config:cache");
         return redirect($url);
     }
 }

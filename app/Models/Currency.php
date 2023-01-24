@@ -39,6 +39,11 @@ class Currency extends Model
         // return $data;
     }
 
+    // public function users()
+    // {
+    //     return $this->hasMany(User::class);
+    // }
+
     static public function getConversionRate()
     {
         $rate = \DB::table('users')->join('currencies', 'currencies.id', '=', 'users.currency_id')

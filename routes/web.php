@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,15 +17,18 @@ use Illuminate\Support\Facades\Route;
 // Route for authentication
 Auth::routes();
 // LANDING PAGE WEB ROUTES
+Route::get('/howitwork', 'HomeController@indexhiw');
+Route::get('ref/{name}/{uid}', 'VisitController@index');
+
 Route::post('newsletter', 'HomeController@newsletter');
 Route::get('/login/{social}', 'Auth\LoginController@redirectToProvider');
 Route::get('/login/{social}/callback', 'Auth\LoginController@handleProviderCallback');
 Route::post('/change-lang', 'HomeController@changeLanguage');
 Route::get('blog', 'HomeController@blog');
 Route::get('blog/{slug}', 'HomeController@showpost');
-Route::get('/', function () {
-    return view('landing.index');
-});
+// Route::get('/', function () {
+//     return view('landing.index');
+// });
 
 /*
 |--------------------------------------------------------------------------
@@ -42,28 +46,36 @@ Route::group(
     // OPASOCIAL USER ROUTES HERE
     function () {
         Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+        Route::get('/faqs', 'HomeController@indexfaq')->name('make.money');
         Route::get('/changelogs', 'SyncController@syncIndex');
         Route::get('blog/{id}/show', 'BlogController@show');
         Route::get('/synced-index/data', 'SyncController@syncIndexData');
         Route::get('/test-controller', 'CurrencyController@index');
 
-        Route::get('/order/new', 'OrderController@newOrder')->name('order.new');
-        Route::post('/order', 'OrderController@store');
-        Route::get('/orders', 'OrderController@index')->name('order.show');
-        Route::get('/orders/{order}/cancel', 'OrderController@cancel');
-        Route::get('/order/my-favorites', 'OrderController@favorites');
-        Route::get('/order/topservices', 'OrderController@topservices');
-        Route::get('/order/premiumnew', 'OrderController@premiumOrder');
-        Route::get('/order/digitalnew', 'OrderController@digitalOrder');
-        Route::post('/orders/search', 'OrderController@searchOrders');
-        Route::get('/order/mass-order', 'OrderController@showMassOrderForm');
-        Route::post('/order/mass-order', 'OrderController@storeMassOrder');
-        Route::get('/orders-index/data', 'OrderController@indexData');
-        Route::get('/orders-filter/{status}', 'OrderController@indexFilter');
-        Route::get('/orders-filter-ajax/{status}/data', 'OrderController@indexFilterData');
-        Route::get('/orders/{order}/refill', 'OrderController@refill');
-        Route::get('/orders/{order}/cancel', 'OrderController@cancel');
-        Route::post('top/order', 'OrderController@topstore');
+        Route::get('/', 'OpaSocial\OrderController@newOrder')->name('order.new');
+        // Route::get('/order/new', 'OpaSocial\OrderController@newOrder')->name('order.new');
+        Route::post('/order', 'OpaSocial\OrderController@store');
+        // Order Vue routes
+        Route::get('order/category', 'OpaSocial\OrderController@getOrderCategory')->name('get.order.category');
+        Route::get('order/service/{category}', 'OpaSocial\OrderController@getOrderService')->name('get.order.service');
+        Route::get('order/convert/{fund}', 'OpaSocial\OrderController@convertOrderPrice')->name('convert.order.price');
+
+        Route::get('massorder', 'OpaSocial\OrderController@showMassOrderForm')->name('massorder');
+        Route::post('/order/mass-order', 'OpaSocial\OrderController@storeMassOrder');
+        Route::get('/orders', 'OpaSocial\OrderController@index')->name('order.show');
+        Route::get('/orders/{order}/cancel', 'OpaSocial\OrderController@cancel');
+        Route::get('/order/my-favorites', 'OpaSocial\OrderController@favorites');
+        Route::get('/order/topservices', 'OpaSocial\OrderController@topservices');
+        Route::get('/order/premiumnew', 'OpaSocial\OrderController@premiumOrder');
+        Route::get('/order/digitalnew', 'OpaSocial\OrderController@digitalOrder');
+        Route::post('/orders/search', 'OpaSocial\OrderController@searchOrders');
+
+        Route::get('/orders-index/data', 'OpaSocial\OrderController@indexData');
+        Route::get('/orders-filter/{status}', 'OpaSocial\OrderController@indexFilter');
+        Route::get('/orders-filter-ajax/{status}/data', 'OpaSocial\OrderController@indexFilterData');
+        Route::get('/orders/{order}/refill', 'OpaSocial\OrderController@refill');
+        Route::get('/orders/{order}/cancel', 'OpaSocial\OrderController@cancel');
+        Route::post('top/order', 'OpaSocial\OrderController@topstore');
         Route::post('/addtofavorite', 'HomeController@addtofavorite');
         // drip feed user side
         Route::get('/dripfeed', 'OpaSocial\DripFeedController@index')->name('dripfeed.show');
@@ -81,8 +93,8 @@ Route::group(
         Route::get('/panels-filter/{status}', 'OpaSocial/ChildPanelController@index');
         Route::get('/panels-filter-ajax/{status}/data', 'OpaSocial/ChildPanelController@indexFilterData');
 
-        Route::get('/service/get-packages/{service_id}', 'OrderController@getPackages');
-        Route::get('/service/get-fpackages/{service_id}', 'OrderController@getfPackages');
+        Route::get('/service/get-packages/{service_id}', 'User\OpaSocial\OrderController@getPackages');
+        Route::get('/service/get-fpackages/{service_id}', 'User\OpaSocial\OrderController@getfPackages');
 
 
         Route::get('/broadcast/{cache_id}', 'DashboardController@getBroadCast');
@@ -137,8 +149,46 @@ Route::group(
         Route::post('/support/ticket/store', 'SupportController@store');
         Route::get('/support/ticket/{id}', 'SupportController@show');
         Route::post('/support/{id}/message', 'SupportController@message');
+
+
+        Route::post('/change-currency', 'HomeController@changeCurrency');
+        Route::get('/servicetracker', 'HomeController@packagetracker');
+        Route::get('/servicetracker/data', 'HomeController@packagetrackerindexData');
+        Route::post('/servicetracker/search', 'HomeController@searchServicetracker');
+        Route::get('/makemoney', 'HomeController@indexmakemoney');
+        //     Route::get('/checkusers', 'InstallationController@getUserData');
+
+        Route::get('/services', 'HomeController@showServices');
+        Route::post('/services/search', 'HomeController@searchServices');
+        Route::get('/affiliates', 'ReferralController@showAffiliates');
+        Route::get('/services', 'HomeController@showServices');
+        //    Route::get('/remove_table/{id}','ReferralController@removetable');
+        // Route::group(['middleware' => 'VerifyModuleAPIEnabled'], function () {
+        //        Route::get('/api', 'HomeController@ApiDocV2');
+        //        Route::get('/api-v1', 'HomeController@ApiDocV1');
+        //     });
+        Route::get('/check', function () {
+            $exitCode = Artisan::call('status:check');
+        });
+        Route::get('/perf', function () {
+            $exitCode = Artisan::call('check:perf');
+        });
+        Route::get('/send', function () {
+            $exitCode = Artisan::call('orders:send');
+        });
+        Route::get('/drip', function () {
+            $exitCode = Artisan::call('drip:feed');
+        });
+        Route::get('/like', function () {
+            $exitCode = Artisan::call('auto:like');
+        });
+        Route::get('/syncseller', function () {
+            $exitCode = Artisan::call('seller:sync');
+        });
     }
 );
+
+
 
 Route::group(
     ['as' => 'moderator.', 'prefix' => 'moderator', 'namespace' => 'Moderator', 'middleware' => ['auth', 'moderator']],
