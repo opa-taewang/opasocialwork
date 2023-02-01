@@ -19,9 +19,11 @@ use App\Models\OpaSocial\Order;
 use App\Models\Opasocial\Package;
 use App\Models\Opasocial\Service;
 use App\Models\OpaSocial\AutoLike;
+use App\Models\OpaSocial\DripFeed;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\AffiliateTransaction;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Models\Opasocial\UserPackagePrice;
@@ -76,6 +78,26 @@ class OrderController extends Controller
         $data = Package::select(DB::raw("id,position,sequence,name,slug,price_per_item,cost_per_item,seller_cost,minimum_quantity,maximum_quantity,performance,description,service_id,custom_comments,refillbtn,features,top,order_limit,refill_period,refill_time, price_per_item * $currency->rate as converted_price,  CONCAT('$currency->symbol',FORMAT((price_per_item * $currency->rate * 1000),2)) as per_1000"))
             ->where([['status', '=', 'ACTIVE'], ['service_id', '=', $category->id]])
             ->get();
+        $data = (object) [
+            'service' => $data,
+            'currency_symbol' => $currency->symbol
+        ];
+        return response()->json($data);
+    }
+
+    public function serviceDetails($package)
+    {
+        // Get User Currency
+        $currency = DB::table('users')
+            ->where('users.id',  '=', Auth::user()->id)
+            ->join('currencies', 'users.currency_id', '=', 'currencies.id')
+            ->select('currencies.name', 'currencies.code', 'currencies.symbol', 'currencies.rate')
+            ->get()
+            ->first();
+
+        $data = Package::select(DB::raw("id,position,sequence,name,slug,price_per_item,cost_per_item,seller_cost,minimum_quantity,maximum_quantity,performance,description,service_id,custom_comments,refillbtn,features,top,order_limit,refill_period,refill_time, price_per_item * $currency->rate as converted_price"))
+            ->where([['status', '=', 'ACTIVE'], ['id', '=', $package]])
+            ->first();
         return response()->json($data);
     }
 
@@ -114,8 +136,60 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request, ['package_id' => 'required']);
-        $package = Package::findOrfail($request->input('package_id'));
+        // Get the package details
+        $this->validate($request, ['orderService' => 'required']);
+        $package = Package::findOrfail($request->input('orderService'));
+
+        // Validation rule
+        if ($package->features == 'NO' || $package->features == 'DRIP-FEED') {
+            if ($package->custom_comments == 1) {
+                $request->validate([
+                    'orderLink' => ['required'],
+                    'customComments' => ['required'],
+                ]);
+                $commnets = $request->input('customComments');
+
+                if ($commnets != '') {
+                    $commnets_arr = preg_split('/\\n/', $commnets);
+                    $total_comments = count($commnets_arr);
+
+                    if ($request->input('orderQuantity') < $total_comments) {
+                        return redirect()->back()->withInput()->withErrors(['quantity' => __('messages.comments_are_more_than_quantity')]);
+                    }
+
+                    if ($total_comments < $request->input('orderQuantity')) {
+                        return redirect()->back()->withInput()->withErrors(['quantity' => __('messages.comments_are_less_than_quantity')]);
+                    }
+                }
+            } else {
+                $request->validate([
+                    'orderLink' => ['required'],
+                    'orderQuantity' => ['required', 'numeric', 'min: ' . $package->minimum_quantity, 'max: ' . $package->maximum_quantity],
+                ]);
+            }
+            //  // Check drip feeed
+            // elseif ($request->input('dripfeedselect')) {
+            //     if ($runs < 2) {
+            //         return redirect()->back()->withInput()->withErrors(['runs' => 'Atleast 2 runs should be entered']);
+            //     }
+
+            //     if ($interval < 1
+            //     ) {
+            //         return redirect()->back()->withInput()->withErrors(['interval' => 'Atleast 1 minute interval should be entered']);
+            //     }
+            // }
+        } elseif ($package->features == 'AUTO') {
+            $request->validate([
+                'autoUsername' => ['required', 'min: 2', 'alpha_dash'],
+                'autoNewPost' => ['numeric'],
+                'autoOldPost' => ['required', 'numeric'],
+                'autoMin' => ['required', 'numeric', 'min:' . $package->minimum_quantity],
+                'autoMax' => ['required', 'numeric', 'max:' . $package->maximum_quantity],
+                'autoDelay' => ['required', 'numeric'],
+                'autoExpiry' => ['required', 'date']
+            ]);
+        }
+
         if ($package->limitReached()) {
             Session::flash('alert', 'You cannot place anymore orders of this package.');
             Session::flash('alertClass', 'danger no-auto-close');
@@ -126,92 +200,51 @@ class OrderController extends Controller
             Session::flash('alertClass', 'danger no-auto-close');
             return redirect('/');
         }
+        // Package price
+        $userPackagePrices = UserPackagePrice::where(['user_id' => Auth::user()->id])->pluck('price_per_item', 'package_id')->toArray();
+        $package_price = (isset($userPackagePrices[$package->id]) ? $userPackagePrices[$package->id] : $package->price_per_item);
 
-        $quantity = $request->input('quantity');
-        $link = $request->input('link');
         $dripfeed = $request->input('dripfeedselect');
         $runs = $request->input('runs');
+        $quantity = $request->input('quantity');
+        $link = $request->input('link');
         $interval = $request->input('interval');
         $autolike = $request->input('autolike');
         $username = $request->input('username');
         $minqty = $request->input('minqty');
         $maxqty = $request->input('maxqty');
-        $posts = $request->input('postcount');
+        $oldPost = $request->input('autoOldPost');
+        $posts = $request->input('autoNewPost');
+
         $av = 0;
         $al = 0;
         $mytime = Carbon\Carbon::now();
         $package->mydate = $mytime;
         $package->save();
-        if ($autolike == 0) {
-            if ($quantity == '') {
-                return redirect()->back()->withInput()->withErrors(['quantity' => 'Quantity is a required field']);
-            } else if ($link == '') {
-                return redirect()->back()->withInput()->withErrors(['link' => 'Link is a required field']);
-            }
-        } else {
-            if ($package->features == 'Auto View') {
-                $av = 1;
-            } else {
-                $al = 1;
-            }
+        // if ($autolike == 0) {
+        //     if ($quantity == '') {
+        //         return redirect()->back()->withInput()->withErrors(['quantity' => 'Quantity is a required field']);
+        //     } else if ($link == '') {
+        //         return redirect()->back()->withInput()->withErrors(['link' => 'Link is a required field']);
+        //     }
+        // } else {
+        //     if ($package->features == 'AUTO') {
+        //         $av = 1;
+        //     } else {
+        //         $al = 1;
+        //     }
 
-            if ($username == '') {
-                return redirect()->back()->withInput()->withErrors(['username' => 'Username is a required field']);
-            } else if ($minqty == '') {
-                return redirect()->back()->withInput()->withErrors(['alquantity' => 'Minimum is a required field']);
-            } else if ($maxqty == '') {
-                return redirect()->back()->withInput()->withErrors(['alquantity' => 'Maximum is a required field']);
-            } else if ($minqty < $package->minimum_quantity) {
-                return redirect()->back()->withInput()->withErrors(['alquantity' => 'Entered quantity is less than the minimum (min:' . $package->minimum_quantity . ')']);
-            } else if ($package->maximum_quantity < $maxqty) {
-                return redirect()->back()->withInput()->withErrors(['alquantity' => 'Entered quantity is more than the maximum (max:' . $package->maximum_quantity . ')']);
-            } else if ($posts == '') {
-                return redirect()->back()->withInput()->withErrors(['posts' => 'Number of Posts is a required field']);
-            }
 
-            $quantity = $package->minimum_quantity;
-        }
 
-        if ($quantity < $package->minimum_quantity) {
-            return redirect()->back()->withInput()->withErrors(['quantity' => __('messages.minimum_quantity')]);
-        }
+        // $quantity = $package->minimum_quantity;
+        // }
 
-        if ($package->maximum_quantity < $quantity) {
-            return redirect()->back()->withInput()->withErrors(['quantity' => __('messages.maximum_quantity')]);
-        }
 
-        if ($dripfeed == 1) {
-            if ($runs < 2) {
-                return redirect()->back()->withInput()->withErrors(['runs' => 'Atleast 2 runs should be entered']);
-            }
-
-            if ($interval < 1) {
-                return redirect()->back()->withInput()->withErrors(['interval' => 'Atleast 1 minute interval should be entered']);
-            }
-        }
-
-        if ($package->custom_comments) {
-            $commnets = $request->input('custom_comments');
-
-            if ($commnets != '') {
-                $commnets_arr = preg_split('/\\n/', $commnets);
-                $total_comments = count($commnets_arr);
-
-                if ($quantity < $total_comments) {
-                    return redirect()->back()->withInput()->withErrors(['quantity' => __('messages.comments_are_more_than_quantity')]);
-                }
-
-                if ($total_comments < $quantity) {
-                    return redirect()->back()->withInput()->withErrors(['quantity' => __('messages.comments_are_less_than_quantity')]);
-                }
-            }
-        }
-
-        $userPackagePrices = UserPackagePrice::where(['user_id' => Auth::user()->id])->pluck('price_per_item', 'package_id')->toArray();
-        $package_price = (isset($userPackagePrices[$package->id]) ? $userPackagePrices[$package->id] : $package->price_per_item);
         // 		$package_price=$package_price*getOption('display_price_per');
 
-        if ($autolike == 1) {
+        // Condition for price display
+        if ($package->features == 'AUTO') {
+            $posts = $oldPost + $posts;
             $price = (float) $package_price * $maxqty;
             $total_price = $price * $posts;
         } else if ($dripfeed == 1) {
@@ -236,165 +269,176 @@ class OrderController extends Controller
             Session::flash('alertClass', 'danger no-auto-close');
             return redirect()->back();
         }
-        if ($package->order_limit != 0) {
+        // Order stert from here
 
-            $order = Order::create(['price' => $total_price, 'quantity' => $quantity, 'package_id' => $package->id, 'license_code' => '', 'user_id' => Auth::user()->id, 'link' => $link, 'custom_comments' => $request->input('custom_comments')]);
-            $grouppercent = Group::where('id', $group->id)->value('point_percent');
-            $authpoint = ($total_price) * $grouppercent;
-            $user = User::find(Auth::user()->id);
-            $user->funds = $user->funds - $total_price;
-            $user->points = $user->points + $authpoint;
-            $user->save();
-            $text = 'Order Placed by user on Website' . "\n";
-            $text .= 'Order ID: ' . $order->id . "\n";
-            $text .= 'Quantity: ' . $order->quantity . "\n";
-            fundChange($text, ($order->price) * -1, 'ORDER', $order->user_id, $order->id);
-            Session::flash('alert', __('messages.order_placed'));
-            Session::flash('alertClass', 'success');
-            return redirect('/orders');
-        }
+        // if ($package->order_limit != 0) {
 
-        if ($al == 1) {
-            $autolikemaster = AutoLike::create(['username' => $username, 'min' => $minqty, 'max' => $maxqty, 'posts' => $posts, 'run_price' => $price, 'runs_triggered' => 0, 'user_id' => Auth::user()->id, 'package_id' => $package->id, 'dripfeed' => 0, 'dripfeed_runs' => 0, 'dripfeed_interval' => 0]);
-            $text = $type . ' Order Placed by user on Website' . "\n";
-            $text .= $type . ' Order ID: ' . $autolikemaster->id . "\n";
-            $text .= 'Min/Max Quantity: ' . $autolikemaster->min . '/' . $autolikemaster->max . "\n";
-            $text .= 'Posts: ' . $autolikemaster->posts . "\n";
-            fundChange($text, $total_price * -1, 'ORDER', $autolikemaster->user_id, 0);
-        } else if ($av == 1) {
-            $autolikemaster = AutoLike::create(['username' => $username, 'min' => $minqty, 'max' => $maxqty, 'posts' => $posts, 'run_price' => $price, 'runs_triggered' => 0, 'user_id' => Auth::user()->id, 'package_id' => $package->id, 'dripfeed' => 0, 'dripfeed_runs' => 0, 'dripfeed_interval' => 0]);
-            $text = $type . ' Order Placed by user on Website' . "\n";
-            $text .= $type . ' Order ID: ' . $autolikemaster->id . "\n";
-            $text .= 'Min/Max Quantity: ' . $autolikemaster->min . '/' . $autolikemaster->max . "\n";
-            $text .= 'Posts: ' . $autolikemaster->posts . "\n";
-            fundChange($text, $total_price * -1, 'ORDER', $autolikemaster->user_id, 0);
-        } else if ($dripfeed == 1) {
-            $dripfeedmaster = DripFeed::create(['run_price' => $price, 'link' => $link, 'run_quantity' => $quantity, 'runs' => $runs, 'interval' => $interval, 'runs_triggered' => 0, 'user_id' => Auth::user()->id, 'package_id' => $package->id, 'active_run_id' => 0, 'custom_comments' => $request->input('custom_comments')]);
-            $text = 'Dripfeed Order Placed by user on Website' . "\n";
-            $text .= 'Dripfeed Order ID: ' . $dripfeedmaster->id . "\n";
-            $text .= 'Quantity: ' . $dripfeedmaster->run_quantity . "\n";
-            $text .= 'Runs: ' . $dripfeedmaster->runs . "\n";
-            $text .= 'Interval: ' . $dripfeedmaster->interval . "\n";
-            fundChange($text, $total_price * -1, 'ORDER', $dripfeedmaster->user_id, 0);
-        } else {
-            $code = '';
-            if (!empty($package->license_codes)) {
-                $license_codes = explode(",", $package->license_codes);
-                $codes = Licensecode::whereIn('code', $license_codes)->pluck('code')->toArray();
-                $result = array_diff($license_codes, $codes);
+        //     $order = Order::create(['price' => $total_price, 'quantity' => $quantity, 'package_id' => $package->id, 'license_code' => '', 'user_id' => Auth::user()->id, 'link' => $link, 'custom_comments' => $request->input('custom_comments')]);
+        //     $grouppercent = Group::where('id', $group->id)->value('point_percent');
+        //     $authpoint = ($total_price) * $grouppercent;
+        //     $user = User::find(Auth::user()->id);
+        //     $user->funds = $user->funds - $total_price;
+        //     $user->points = $user->points + $authpoint;
+        //     $user->save();
+        //     $text = 'Order Placed by user on Website' . "\n";
+        //     $text .= 'Order ID: ' . $order->id . "\n";
+        //     $text .= 'Quantity: ' . $order->quantity . "\n";
+        //     fundChange($text, ($order->price) * -1, 'ORDER', $order->user_id, $order->id);
+        //     Session::flash('alert', __('messages.order_placed'));
+        //     Session::flash('alertClass', 'success');
+        //     return redirect('/orders');
+        // }
 
-                if ($package->minimum_quantity != $package->maximum_quantity) {
-                    $order = Order::create(['price' => $total_price, 'quantity' => $quantity, 'package_id' => $package->id, 'license_code' => 'supportticket', 'api_id' => $package->preferred_api_id, 'user_id' => Auth::user()->id, 'link' => $link, 'custom_comments' => $request->input('custom_comments')]);
-                    $text = 'Order Placed by user on Website' . "\n";
-                    $text .= 'Order ID: ' . $order->id . "\n";
-                    $text .= 'Quantity: ' . $order->quantity . "\n";
-                    fundChange($text, ($order->price) * -1, 'ORDER', $order->user_id, $order->id);
-                    $user = User::find(Auth::user()->id);
-                    $user->funds = $user->funds - $total_price;
-                    $user->save();
-                    $alert = [];
-                    $alert['id'] = $order->id;
-                    $alert['pname'] = $order->package->name;
-                    $alert['qty'] = $order->quantity;
-                    $alert['prc'] = getOption('currency_symbol') . ($order->price);
-                    $alert['bal'] = $user->funds;
-                    $alert['mess'] = "Your Bulk Premium Account Order has been Received. <br>
-                            Order ID: $order->id <br>
-                            Package: " . $order->package->name . "<br>
-                            Quantity: $order->quantity <br>
-                            Price: $order->price <br>
-                            Balance: $user->funds";
-                    $ticket = Ticket::create(['topic' => 'PremiumAccounts', 'subject' => $order->package->name, 'description' => $alert['mess'], 'user_id' => Auth::user()->id]);
-                    Mail::to(getOption('notify_email'))->send(new Mail\TicketSubmitted($ticket));
+        // if ($package->features == 'AUTO') {
+        //     $autolikemaster = AutoLike::create([
+        //         'username' => $username,
+        //         'min' => $minqty,
+        //         'max' => $maxqty,
+        //         'old_posts' => $oldPost,
+        //         'posts' => $posts,
+        //         'run_price' => $price,
+        //         'runs_triggered' => 0,
+        //         'user_id' => Auth::user()->id,
+        //         'package_id' => $package->id,
+        //         'dripfeed' => 0,
+        //         'dripfeed_runs' => 0,
+        //         'dripfeed_interval' => 0
+        //     ]);
+        //     $text = $type . ' Order Placed by user on Website' . "\n";
+        //     $text .= $type . ' Order ID: ' . $autolikemaster->id . "\n";
+        //     $text .= 'Min/Max Quantity: ' . $autolikemaster->min . '/' . $autolikemaster->max . "\n";
+        //     $text .= 'Posts: ' . $autolikemaster->posts . "\n";
+        //     fundChange($text, $total_price * -1, 'ORDER', $autolikemaster->user_id, 0);
+        // } else if ($dripfeed == 1) {
+        //     $dripfeedmaster = DripFeed::create(['run_price' => $price, 'link' => $link, 'run_quantity' => $quantity, 'runs' => $runs, 'interval' => $interval, 'runs_triggered' => 0, 'user_id' => Auth::user()->id, 'package_id' => $package->id, 'active_run_id' => 0, 'custom_comments' => $request->input('custom_comments')]);
+        //     $text = 'Dripfeed Order Placed by user on Website' . "\n";
+        //     $text .= 'Dripfeed Order ID: ' . $dripfeedmaster->id . "\n";
+        //     $text .= 'Quantity: ' . $dripfeedmaster->run_quantity . "\n";
+        //     $text .= 'Runs: ' . $dripfeedmaster->runs . "\n";
+        //     $text .= 'Interval: ' . $dripfeedmaster->interval . "\n";
+        //     fundChange($text, $total_price * -1, 'ORDER', $dripfeedmaster->user_id, 0);
+        // } else {
+        //     $code = '';
+        //     if (!empty($package->license_codes)) {
+        //         $license_codes = explode(",", $package->license_codes);
+        //         $codes = Licensecode::whereIn('code', $license_codes)->pluck('code')->toArray();
+        //         $result = array_diff($license_codes, $codes);
 
-                    Session::flash('alert', __('Support Ticket Created. Soon you will get the Necessary'));
-                    Session::flash('alertClass', 'success no-auto-close');
-                    return redirect('/support');
-                }
+        //         if ($package->minimum_quantity != $package->maximum_quantity) {
+        //             $order = Order::create(['price' => $total_price, 'quantity' => $quantity, 'package_id' => $package->id, 'license_code' => 'supportticket', 'api_id' => $package->preferred_api_id, 'user_id' => Auth::user()->id, 'link' => $link, 'custom_comments' => $request->input('custom_comments')]);
+        //             $text = 'Order Placed by user on Website' . "\n";
+        //             $text .= 'Order ID: ' . $order->id . "\n";
+        //             $text .= 'Quantity: ' . $order->quantity . "\n";
+        //             fundChange($text, ($order->price) * -1, 'ORDER', $order->user_id, $order->id);
+        //             $user = User::find(Auth::user()->id);
+        //             $user->funds = $user->funds - $total_price;
+        //             $user->save();
+        //             $alert = [];
+        //             $alert['id'] = $order->id;
+        //             $alert['pname'] = $order->package->name;
+        //             $alert['qty'] = $order->quantity;
+        //             $alert['prc'] = getOption('currency_symbol') . ($order->price);
+        //             $alert['bal'] = $user->funds;
+        //             $alert['mess'] = "Your Bulk Premium Account Order has been Received. <br>
+        //                     Order ID: $order->id <br>
+        //                     Package: " . $order->package->name . "<br>
+        //                     Quantity: $order->quantity <br>
+        //                     Price: $order->price <br>
+        //                     Balance: $user->funds";
+        //             $ticket = Ticket::create(['topic' => 'PremiumAccounts', 'subject' => $order->package->name, 'description' => $alert['mess'], 'user_id' => Auth::user()->id]);
+        //             Mail::to(getOption('notify_email'))->send(new Mail\TicketSubmitted($ticket));
 
-                if (empty($result)) {
-                    $order = Order::create(['price' => $total_price, 'quantity' => $quantity, 'package_id' => $package->id, 'license_code' => 'supportticket', 'api_id' => $package->preferred_api_id, 'user_id' => Auth::user()->id, 'link' => $link, 'custom_comments' => $request->input('custom_comments')]);
-                    $grouppercent = Group::where('id', $group->id)->value('point_percent');
-                    $authpoint = ($total_price) * $grouppercent;
-                    $user = User::find(Auth::user()->id);
-                    $text = 'Order Placed by user on Website' . "\n";
-                    $text .= 'Order ID: ' . $order->id . "\n";
-                    $text .= 'Quantity: ' . $order->quantity . "\n";
-                    fundChange($text, ($order->price) * -1, 'ORDER', $order->user_id, $order->id);
-                    $user->funds = $user->funds - $total_price;
-                    $user->points = $user->points + $authpoint;
-                    $user->save();
-                    $alert = [];
-                    $alert['id'] = $order->id;
-                    $alert['pname'] = $order->package->name;
-                    $alert['link'] = $order->link;
-                    $alert['qty'] = $order->quantity;
-                    $alert['prc'] = getOption('currency_symbol') . ($order->price);
-                    $alert['bal'] = $user->funds;
-                    $alert['mess'] = "Your Order has been Received <br>
-                            Order ID: $order->id <br>
-                            Package: " . $order->package->name . "<br>
-                            Price: $order->price <br>
-                            Balance: $user->funds";
-                    $ticket = Ticket::create(['topic' => 'PremiumAccounts', 'subject' => $order->package->name, 'description' => $alert['mess'], 'user_id' => Auth::user()->id]);
-                    Mail::to(getOption('notify_email'))->send(new Mail\TicketSubmitted($ticket));
+        //             Session::flash('alert', __('Support Ticket Created. Soon you will get the Necessary'));
+        //             Session::flash('alertClass', 'success no-auto-close');
+        //             return redirect('/support');
+        //         }
 
-                    Session::flash('alert', __('Support Ticket Created. Soon you will get the Necessary'));
-                    Session::flash('alertClass', 'success no-auto-close');
-                    return redirect('/support');
-                } elseif (count($result) < 3) {
-                    $html = "You have only " . count($result) . " License Code";
-                    // try{
-                    // 	    Mail::send(array(), array(), function ($message) use ($html) {
-                    //           $message->to('hameedaslam.95@gmail.com')
-                    //             ->subject('License Code')
-                    //             ->from(env('MAIL_FROM_NAME'))
-                    //             ->setBody($html, 'text/html');
-                    //         });
-                    // } catch(\Exception $e){}
-                }
-                $value = 1;
-                $c = 0;
-                $license_codes = explode(",", $package->license_codes);
-                $codes = Licensecode::whereIn('code', $license_codes)->pluck('code')->toArray();
-                $free_codes = array_diff($license_codes, $codes);
-                $free_codes = count($free_codes);
-                $free1 = 1;
-                $free_code = $free_codes - $free1;
+        //         if (empty($result)) {
+        //             $order = Order::create(['price' => $total_price, 'quantity' => $quantity, 'package_id' => $package->id, 'license_code' => 'supportticket', 'api_id' => $package->preferred_api_id, 'user_id' => Auth::user()->id, 'link' => $link, 'custom_comments' => $request->input('custom_comments')]);
+        //             $grouppercent = Group::where('id', $group->id)->value('point_percent');
+        //             $authpoint = ($total_price) * $grouppercent;
+        //             $user = User::find(Auth::user()->id);
+        //             $text = 'Order Placed by user on Website' . "\n";
+        //             $text .= 'Order ID: ' . $order->id . "\n";
+        //             $text .= 'Quantity: ' . $order->quantity . "\n";
+        //             fundChange($text, ($order->price) * -1, 'ORDER', $order->user_id, $order->id);
+        //             $user->funds = $user->funds - $total_price;
+        //             $user->points = $user->points + $authpoint;
+        //             $user->save();
+        //             $alert = [];
+        //             $alert['id'] = $order->id;
+        //             $alert['pname'] = $order->package->name;
+        //             $alert['link'] = $order->link;
+        //             $alert['qty'] = $order->quantity;
+        //             $alert['prc'] = getOption('currency_symbol') . ($order->price);
+        //             $alert['bal'] = $user->funds;
+        //             $alert['mess'] = "Your Order has been Received <br>
+        //                     Order ID: $order->id <br>
+        //                     Package: " . $order->package->name . "<br>
+        //                     Price: $order->price <br>
+        //                     Balance: $user->funds";
+        //             $ticket = Ticket::create(['topic' => 'PremiumAccounts', 'subject' => $order->package->name, 'description' => $alert['mess'], 'user_id' => Auth::user()->id]);
+        //             Mail::to(getOption('notify_email'))->send(new Mail\TicketSubmitted($ticket));
 
-                while ($value) {
-                    if (isset($result[$c])) {
-                        Licensecode::create(['code' => $result[$c], 'package_id' => $package->name, 'available' => $free_code, 'purchase_by' => Auth::user()->email, 'created_at' => date('Y-m-d H:s:i'), 'updated_at' => date('Y-m-d H:s:i')]);
-                        $code = $result[$c];
-                        $value = 0;
-                    } else {
-                        $c++;
-                    }
-                }
-            }
-            $orderc = 1;
-            $order = Order::create(['price' => $total_price, 'quantity' => $quantity, 'package_id' => $package->id, 'license_code' => $code, 'api_id' => $package->preferred_api_id, 'user_id' => Auth::user()->id, 'link' => $link, 'custom_comments' => $request->input('custom_comments')]);
-            $text = 'Order Placed by user on Website' . "\n";
-            $text .= 'Order ID: ' . $order->id . "\n";
-            $text .= 'Quantity: ' . $order->quantity . "\n";
-            fundChange($text, ($order->price) * -1, 'ORDER', $order->user_id, $order->id);
-        }
+        //             Session::flash('alert', __('Support Ticket Created. Soon you will get the Necessary'));
+        //             Session::flash('alertClass', 'success no-auto-close');
+        //             return redirect('/support');
+        //         } elseif (count($result) < 3) {
+        //             $html = "You have only " . count($result) . " License Code";
+        //             // try{
+        //             // 	    Mail::send(array(), array(), function ($message) use ($html) {
+        //             //           $message->to('hameedaslam.95@gmail.com')
+        //             //             ->subject('License Code')
+        //             //             ->from(env('MAIL_FROM_NAME'))
+        //             //             ->setBody($html, 'text/html');
+        //             //         });
+        //             // } catch(\Exception $e){}
+        //         }
+        //         $value = 1;
+        //         $c = 0;
+        //         $license_codes = explode(",", $package->license_codes);
+        //         $codes = Licensecode::whereIn('code', $license_codes)->pluck('code')->toArray();
+        //         $free_codes = array_diff($license_codes, $codes);
+        //         $free_codes = count($free_codes);
+        //         $free1 = 1;
+        //         $free_code = $free_codes - $free1;
 
-        $grouppercent = Group::where('id', $group->id)->value('point_percent');
-        $authpoint = ($total_price) * $grouppercent;
-        $user = User::find(Auth::user()->id);
-        $user->funds = $user->funds - $total_price;
-        $user->points = $user->points + $authpoint;
-        $user->save();
+        //         while ($value) {
+        //             if (isset($result[$c])) {
+        //                 Licensecode::create(['code' => $result[$c], 'package_id' => $package->name, 'available' => $free_code, 'purchase_by' => Auth::user()->email, 'created_at' => date('Y-m-d H:s:i'), 'updated_at' => date('Y-m-d H:s:i')]);
+        //                 $code = $result[$c];
+        //                 $value = 0;
+        //             } else {
+        //                 $c++;
+        //             }
+        //         }
+        //     }
+        //     $orderc = 1;
+        //     $order = Order::create(['price' => $total_price, 'quantity' => $quantity, 'package_id' => $package->id, 'license_code' => $code, 'api_id' => $package->preferred_api_id, 'user_id' => Auth::user()->id, 'link' => $link, 'custom_comments' => $request->input('custom_comments')]);
+        //     $text = 'Order Placed by user on Website' . "\n";
+        //     $text .= 'Order ID: ' . $order->id . "\n";
+        //     $text .= 'Quantity: ' . $order->quantity . "\n";
+        //     fundChange($text, ($order->price) * -1, 'ORDER', $order->user_id, $order->id);
+        // }
 
-        if (($dripfeed == 1) || ($autolike == 1)) {
-        } else if (!is_null($package->preferred_api_id)) {
-            event(new Events\OrderPlaced($order));
-        }
+        // $grouppercent = Group::where('id', $group->id)->value('point_percent');
+        // $authpoint = ($total_price) * $grouppercent;
+        // $user = User::find(Auth::user()->id);
+        // $user->funds = $user->funds - $total_price;
+        // $user->points = $user->points + $authpoint;
+        // $user->save();
 
-        Session::flash('alert', __('messages.order_placed'));
-        Session::flash('alertClass', 'success');
-        return redirect('/orders');
+        // if (($dripfeed == 1) || ($autolike == 1)) {
+        // } else if (!is_null($package->preferred_api_id)) {
+        //     event(new Events\OrderPlaced($order));
+        // }
+
+        // Session::flash('alert', __('messages.order_placed'));
+        // Session::flash('alertClass', 'success');
+
+        // Order ends at here
+        // return redirect('/orders');
+        return [$request, $package];
     }
 
 

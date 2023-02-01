@@ -31,7 +31,7 @@ return new class extends Migration
             $table->integer('preferred_api_id')->lenght(10)->unsigned()->nullable();
             $table->tinyInteger('custom_comments')->lenght(1)->default(0);
             $table->tinyInteger('refillbtn')->lenght(10)->default(0);
-            $table->enum('features', ['No', 'Drip Feed', 'Auto Like', 'Auto View'])->default('No');
+            $table->enum('features', ['No', 'Drip Feed', 'AUTO'])->default('No');
             $table->tinyInteger('top')->lenght(1)->default(0);
             $table->timestamp('created_at');
             $table->timestamp('updated_at');

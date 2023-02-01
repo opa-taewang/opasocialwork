@@ -9,9 +9,9 @@ class ChildPanelController extends Controller
 {
     public function __construct()
     {
-        if (\DB::table("configs")->where("name", "child_panel")->value("value") != "on") {
-            abort(401);
-        }
+        // if (\DB::table("configs")->where("name", "child_panel")->value("value") != "on") {
+        //     abort(401);
+        // }
     }
     // @Function index is protected ioncube.dynamickey encoding key.
     public function index()

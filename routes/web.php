@@ -26,6 +26,8 @@ Route::get('/login/{social}/callback', 'Auth\LoginController@handleProviderCallb
 Route::post('/change-lang', 'HomeController@changeLanguage');
 Route::get('blog', 'HomeController@blog');
 Route::get('blog/{slug}', 'HomeController@showpost');
+// Route::get('blog/{id}/show', 'BlogController@show');
+
 // Route::get('/', function () {
 //     return view('landing.index');
 // });
@@ -48,17 +50,15 @@ Route::group(
         Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
         Route::get('/faqs', 'HomeController@indexfaq')->name('make.money');
         Route::get('/changelogs', 'SyncController@syncIndex');
-        Route::get('blog/{id}/show', 'BlogController@show');
-        Route::get('/synced-index/data', 'SyncController@syncIndexData');
-        Route::get('/test-controller', 'CurrencyController@index');
 
         Route::get('/', 'OpaSocial\OrderController@newOrder')->name('order.new');
         // Route::get('/order/new', 'OpaSocial\OrderController@newOrder')->name('order.new');
-        Route::post('/order', 'OpaSocial\OrderController@store');
+        Route::post('/orders', 'OpaSocial\OrderController@store')->name('route.store');
+        Route::post('/orders', 'OpaSocial\OrderController@store');
         // Order Vue routes
-        Route::get('order/category', 'OpaSocial\OrderController@getOrderCategory')->name('get.order.category');
-        Route::get('order/service/{category}', 'OpaSocial\OrderController@getOrderService')->name('get.order.service');
-        Route::get('order/convert/{fund}', 'OpaSocial\OrderController@convertOrderPrice')->name('convert.order.price');
+        Route::get('orders/category', 'OpaSocial\OrderController@getOrderCategory')->name('get.order.category');
+        Route::get('orders/service/{category}', 'OpaSocial\OrderController@getOrderService')->name('get.order.service');
+        Route::get('orders/convert/{fund}', 'OpaSocial\OrderController@convertOrderPrice')->name('convert.order.price');
 
         Route::get('massorder', 'OpaSocial\OrderController@showMassOrderForm')->name('massorder');
         Route::post('/order/mass-order', 'OpaSocial\OrderController@storeMassOrder');
@@ -86,15 +86,15 @@ Route::group(
         Route::get('/autolike-index/data', 'AutoLikeController@indexData');
         Route::get('/autolike/{al}/details', 'AutoLikeController@details');
         // Childpanel orders user side
-        Route::get('/panelorders-index/data', 'OpaSocial/ChildPanelController@indexData');
-        Route::get('child-panels/new/order', 'OpaSocial/ChildPanelController@create');
-        Route::get('child-panels/orders/sync', 'OpaSocial/ChildPanelController@sync');
-        Route::resource('/child-panels', 'OpaSocial/ChildPanelController');
-        Route::get('/panels-filter/{status}', 'OpaSocial/ChildPanelController@index');
-        Route::get('/panels-filter-ajax/{status}/data', 'OpaSocial/ChildPanelController@indexFilterData');
+        Route::get('/panelorders-index/data', 'OpaSocial\ChildPanelController@indexData');
+        Route::get('child-panels/new/order', 'OpaSocial\ChildPanelController@create');
+        Route::get('child-panels/orders/sync', 'OpaSocial\ChildPanelController@sync');
+        Route::resource('/child-panels', 'OpaSocial\ChildPanelController');
+        Route::get('/panels-filter/{status}', 'OpaSocial\ChildPanelController@index');
+        Route::get('/panels-filter-ajax/{status}/data', 'OpaSocial\ChildPanelController@indexFilterData');
 
-        Route::get('/service/get-packages/{service_id}', 'User\OpaSocial\OrderController@getPackages');
-        Route::get('/service/get-fpackages/{service_id}', 'User\OpaSocial\OrderController@getfPackages');
+        Route::get('/service/get-packages/{service_id}', 'OpaSocial\OrderController@getPackages');
+        Route::get('/service/get-fpackages/{service_id}', 'OpaSocial\OrderController@getfPackages');
 
 
         Route::get('/broadcast/{cache_id}', 'DashboardController@getBroadCast');
@@ -106,13 +106,12 @@ Route::group(
         Route::put('/redeem', 'AccountController@redeemPoints');
         Route::get('/points-history', 'AccountController@getRedeemHistory');
         Route::get('/points-history-index/data', 'AccountController@getRedeemHistoryData');
-        Route::resource('/blog', 'BlogController');
 
-        Route::get('/subscriptions', 'SubscriptionController@index')->name('subscription.show');
-        Route::get('/subscriptions/{id}', 'SubscriptionController@show');
-        Route::get('/subscriptions-index/data', 'SubscriptionController@indexData');
-        Route::get('/subscription/new', 'SubscriptionController@create');
-        Route::post('/subscription', 'SubscriptionController@store');
+        Route::get('/subscriptions', 'OpaSocial\SubscriptionController@index')->name('subscription.show');
+        Route::get('/subscriptions/{id}', 'OpaSocial\SubscriptionController@show');
+        Route::get('/subscriptions-index/data', 'OpaSocial\SubscriptionController@indexData');
+        Route::get('/subscription/new', 'OpaSocial\SubscriptionController@create');
+        Route::post('/subscription', 'OpaSocial\SubscriptionController@store');
 
         Route::get('/account/settings', 'AccountController@showSettings');
         Route::put('/account/password', 'AccountController@updatePassword');
@@ -131,10 +130,10 @@ Route::group(
         Route::get('/payment/add-funds/flutterwave/cancel', 'FlutterWaveController@cancel');
         Route::post('/payment/add-funds/flutterwave', 'FlutterWaveController@store');
 
-        Route::get('/payment/add-funds/bitcoin', 'CoinPaymentsController@showForm');
-        Route::post('/payment/add-funds/bitcoin', 'CoinPaymentsController@store');
-        Route::get('/payment/add-funds/bitcoin/cancel', 'CoinPaymentsController@cancel');
-        Route::get('/payment/add-funds/bitcoin/success', 'CoinPaymentsController@success');
+        // Route::get('/payment/add-funds/bitcoin', 'CoinPaymentsController@showForm');
+        // Route::post('/payment/add-funds/bitcoin', 'CoinPaymentsController@store');
+        // Route::get('/payment/add-funds/bitcoin/cancel', 'CoinPaymentsController@cancel');
+        // Route::get('/payment/add-funds/bitcoin/success', 'CoinPaymentsController@success');
 
         Route::get('/payment/add-funds/bank-other', 'HomeController@showManualPaymentForm');
 
@@ -151,7 +150,6 @@ Route::group(
         Route::post('/support/{id}/message', 'SupportController@message');
 
 
-        Route::post('/change-currency', 'HomeController@changeCurrency');
         Route::get('/servicetracker', 'HomeController@packagetracker');
         Route::get('/servicetracker/data', 'HomeController@packagetrackerindexData');
         Route::post('/servicetracker/search', 'HomeController@searchServicetracker');
@@ -196,27 +194,28 @@ Route::group(
     function () {
         Route::resource('/', 'SupportController');
 
+
         Route::get('/account/settings', 'AccountController@showSettings');
         Route::get('/account/settings', 'AccountController@showSettings');
         Route::put('/account/password', 'AccountController@updatePassword');
 
-        Route::resource('/orders', 'OrderController');
-        Route::post('/order/{id}/complete', 'OrderController@completeOrder');
-        Route::get('/orders-ajax/data', 'OrderController@indexData');
-        Route::post('/orders-bulk-update', 'OrderController@bulkUpdate');
-        Route::get('/orders-filter/{status}', 'OrderController@indexFilter');
-        Route::get('/orders-filter-ajax/{status}/data', 'OrderController@indexFilterData');
-        Route::get('/dripfeed', 'DripFeedController@index');
-        Route::get('/dripfeed-index/data', 'DripFeedController@indexData');
-        Route::get('/dripfeed/edit/{dripfeed}', 'DripFeedController@edit');
-        Route::post('/dripfeed', 'DripFeedController@update');
-        Route::get('/dripfeed/{df}/details', 'DripFeedController@details');
+        Route::resource('/orders', 'OpaSocial\OrderController');
+        Route::post('/order/{id}/complete', 'OpaSocial\OrderController@completeOrder');
+        Route::get('/orders-ajax/data', 'OpaSocial\OrderController@indexData');
+        Route::post('/orders-bulk-update', 'OpaSocial\OrderController@bulkUpdate');
+        Route::get('/orders-filter/{status}', 'OpaSocial\OrderController@indexFilter');
+        Route::get('/orders-filter-ajax/{status}/data', 'OpaSocial\OrderController@indexFilterData');
+        Route::get('/dripfeed', 'OpaSocial\DripFeedController@index');
+        Route::get('/dripfeed-index/data', 'OpaSocial\DripFeedController@indexData');
+        Route::get('/dripfeed/edit/{dripfeed}', 'OpaSocial\DripFeedController@edit');
+        Route::post('/dripfeed', 'OpaSocial\DripFeedController@update');
+        Route::get('/dripfeed/{df}/details', 'OpaSocial\DripFeedController@details');
 
-        Route::get('/autolike', 'AutoLikeController@index');
-        Route::get('/autolike-index/data', 'AutoLikeController@indexData');
-        Route::get('/autolike/edit/{autolike}', 'AutoLikeController@edit');
-        Route::post('/autolike', 'AutoLikeController@update');
-        Route::get('/autolike/{al}/details', 'AutoLikeController@details');
+        Route::get('/autolike', 'OpaSocial\AutoLikeController@index');
+        Route::get('/autolike-index/data', 'OpaSocial\AutoLikeController@indexData');
+        Route::get('/autolike/edit/{autolike}', 'OpaSocial\AutoLikeController@edit');
+        Route::post('/autolike', 'OpaSocial\AutoLikeController@update');
+        Route::get('/autolike/{al}/details', 'OpaSocial\AutoLikeController@details');
 
 
         Route::resource('/support/tickets', 'SupportController');
@@ -229,14 +228,14 @@ Route::group(
 
         Route::get('/funds-load-history', 'UserController@getFundsLoadHistory');
         Route::get('/funds-load-history/data', 'UserController@getFundsLoadHistoryData');
-        Route::get('/refills/list', 'RefillRequestController@index');
-        Route::get('/refills-ajax/data', 'RefillRequestController@indexData');
-        Route::get('/refill-complete', 'RefillRequestController@completeStatus');
-        Route::get('/refills-filter/{status}', 'RefillRequestController@indexFilter');
-        Route::get('/refills-filter-ajax/{status}/data', 'RefillRequestController@indexFilterData');
-        Route::get('/refills/{order}/details', 'RefillRequestController@details');
-        Route::get('/refill/{refill}/{status}', 'RefillRequestController@changeStatus');
-        Route::get('/system/refresh', 'DashboardController@refreshSystem');
+        Route::get('/refills/list', 'OpaSocial\RefillRequestController@index');
+        Route::get('/refills-ajax/data', 'OpaSocial\RefillRequestController@indexData');
+        Route::get('/refill-complete', 'OpaSocial\RefillRequestController@completeStatus');
+        Route::get('/refills-filter/{status}', 'OpaSocial\RefillRequestController@indexFilter');
+        Route::get('/refills-filter-ajax/{status}/data', 'OpaSocial\RefillRequestController@indexFilterData');
+        Route::get('/refills/{order}/details', 'OpaSocial\RefillRequestController@details');
+        Route::get('/refill/{refill}/{status}', 'OpaSocial\RefillRequestController@changeStatus');
+        // Route::get('/system/refresh', 'DashboardController@refreshSystem');
     }
 );
 
@@ -244,6 +243,10 @@ Route::group(
     ['as' => 'admin.', 'prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['auth', 'moderator', 'admin']],
     // OPASOCIAL ADMIN ROUTES HERE
     function () {
+        Route::resource('/blog', 'BlogController');
+        Route::get('/test-controller', 'CurrencyController@index');
+        // Route::post('/change-currency', 'HomeController@changeCurrency');
+
         Route::get('/cashes', 'CashController@index');
         Route::resource('/ips', 'IpsController');
         Route::get('/ips-ajax/data', 'IpsController@indexData');
@@ -252,47 +255,47 @@ Route::group(
         Route::post('/note', 'DashboardController@saveNote');
         Route::get('/account/settings', 'AccountController@showSettings');
         Route::put('/account/password', 'AccountController@updatePassword');
-        Route::get('/profit', 'DPController@profit');
-        Route::get('/mprofit', 'DPController@wprofit');
-        Route::get('/package/{package}/up', 'PackageController@up');
-        Route::get('/package/{package}/down', 'PackageController@down');
-        Route::resource('/services', 'ServiceController');
+        Route::get('/profit', 'OpaSocial\DPController@profit');
+        Route::get('/mprofit', 'OpaSocial\DPController@wprofit');
+        Route::get('/package/{package}/up', 'OpaSocial\PackageController@up');
+        Route::get('/package/{package}/down', 'OpaSocial\PackageController@down');
+        Route::resource('/services', 'OpaSocial\ServiceController');
 
         Route::resource('/ads', 'AdsController');
         Route::get('/ads-ajax/data', 'AdsController@indexData');
         Route::resource('/newsletter', 'NewsletterController');
         Route::get('/export/newsletter', 'NewsletterController@export');
         Route::get('/newsletter-ajax/data', 'NewsletterController@indexData');
-        Route::post('/services/sequence', 'ServiceController@saveSequence');
-        Route::post('/packages/sequence', 'ServiceController@packageSequence');
+        Route::post('/services/sequence', 'OpaSocial\ServiceController@saveSequence');
+        Route::post('/packages/sequence', 'OpaSocial\ServiceController@packageSequence');
 
 
-        Route::get('/top-services', 'ServiceController@getTopServices');
-        Route::get('/packages/top/{id}/edit', 'ServiceController@editTopServices');
-        Route::post('topservice/store', 'ServiceController@storeTopServices');
-        Route::delete('packages/top/{id}', 'ServiceController@deleteTopServices');
-        Route::get('/top-services/create', 'ServiceController@createTopServices');
-        Route::get('/top-services-ajax/data', 'ServiceController@TopindexData');
-        Route::get('/services-index/data', 'ServiceController@indexData');
+        Route::get('/top-services', 'OpaSocial\ServiceController@getTopServices');
+        Route::get('/packages/top/{id}/edit', 'OpaSocial\ServiceController@editTopServices');
+        Route::post('topservice/store', 'OpaSocial\ServiceController@storeTopServices');
+        Route::delete('packages/top/{id}', 'OpaSocial\ServiceController@deleteTopServices');
+        Route::get('/top-services/create', 'OpaSocial\ServiceController@createTopServices');
+        Route::get('/top-services-ajax/data', 'OpaSocial\ServiceController@TopindexData');
+        Route::get('/services-index/data', 'OpaSocial\ServiceController@indexData');
         Route::get('/codes', 'LicenseCodeController@index');
         Route::get('/codes-ajax/data', 'LicenseCodeController@indexData');
-        Route::get('/service/{service}/up', 'ServiceController@ups');
-        Route::get('/service/{service}/down', 'ServiceController@downs');
-        Route::get('/service/package/{package}/up', 'ServiceController@up');
-        Route::get('/service/package/{package}/down', 'ServiceController@down');
-        Route::get('/services/{service}/details', 'ServiceController@details');
-        Route::get('/active/{service}/{package}', 'ServiceController@activeSP');
-        Route::get('/inactive/{service}/{package}', 'ServiceController@inactiveSP');
-        Route::get('/delete/{service}/{package}', 'ServiceController@deleteSP');
-        Route::get('/downloads', 'OrderController@downloads');
-        Route::get('/downloadrecords-ajax/data', 'OrderController@downloadsindexData');
+        Route::get('/service/{service}/up', 'OpaSocial\ServiceController@ups');
+        Route::get('/service/{service}/down', 'OpaSocial\ServiceController@downs');
+        Route::get('/service/package/{package}/up', 'OpaSocial\ServiceController@up');
+        Route::get('/service/package/{package}/down', 'OpaSocial\ServiceController@down');
+        Route::get('/services/{service}/details', 'OpaSocial\ServiceController@details');
+        Route::get('/active/{service}/{package}', 'OpaSocial\ServiceController@activeSP');
+        Route::get('/inactive/{service}/{package}', 'OpaSocial\ServiceController@inactiveSP');
+        Route::get('/delete/{service}/{package}', 'OpaSocial\ServiceController@deleteSP');
+        Route::get('/downloads', 'OpaSocial\OrderController@downloads');
+        Route::get('/downloadrecords-ajax/data', 'OpaSocial\OrderController@downloadsindexData');
         Route::get('/systeminfo', 'ConfigController@index');
-        Route::resource('/child-panels', 'ChildPanelController');
-        Route::get('child-panels/orders/', 'ChildPanelController@show');
-        Route::get('child-panels/orders/sync', 'ChildPanelController@sync');
-        Route::put('child-panels/order/{id}', 'ChildPanelController@updateorder');
-        Route::get('child-panels-orders/data', 'ChildPanelController@getorders');
-        Route::post('/child-panels/update/price', 'ChildPanelController@updatePrice');
+        Route::resource('/child-panels', 'OpaSocial\ChildPanelController');
+        Route::get('child-panels/orders/', 'OpaSocial\ChildPanelController@show');
+        Route::get('child-panels/orders/sync', 'OpaSocial\ChildPanelController@sync');
+        Route::put('child-panels/order/{id}', 'OpaSocial\ChildPanelController@updateorder');
+        Route::get('child-panels-orders/data', 'OpaSocial\ChildPanelController@getorders');
+        Route::post('/child-panels/update/price', 'OpaSocial\ChildPanelController@updatePrice');
         Route::get('/system/settings', 'ConfigController@edit');
         Route::put('/system/settings', 'ConfigController@update');
         Route::get('/users/{id}/login', 'UserController@loginAs');
@@ -308,79 +311,79 @@ Route::group(
         Route::get('/blog-ajax/data', 'BlogController@indexData');
         Route::resource('/blog', 'BlogController');
         Route::get('blog/{id}/show', 'BlogController@show');
-        Route::get('/apifetch', 'FetchController@index');
-        Route::post('/apifetch/show', 'FetchController@showData');
-        Route::get('/apifetch/getmap', 'FetchController@getMap');
-        Route::post('/apifetch/savemap', 'FetchController@saveMap');
-        Route::get('/apifetch/data', 'FetchController@getData');
-        Route::post('/apifetch/save', 'FetchController@saveData');
-        Route::get('/apifetch/redirect', 'FetchController@redirect');
+        Route::get('/apifetch', 'OpaSocial\FetchController@index');
+        Route::post('/apifetch/show', 'OpaSocial\FetchController@showData');
+        Route::get('/apifetch/getmap', 'OpaSocial\FetchController@getMap');
+        Route::post('/apifetch/savemap', 'OpaSocial\FetchController@saveMap');
+        Route::get('/apifetch/data', 'OpaSocial\FetchController@getData');
+        Route::post('/apifetch/save', 'OpaSocial\FetchController@saveData');
+        Route::get('/apifetch/redirect', 'OpaSocial\FetchController@redirect');
 
-        Route::get('/mail', 'SyncController@mail');
-        Route::get('/synced', 'SyncController@syncIndex');
-        Route::get('/synced-index/data', 'SyncController@syncIndexData');
-        Route::resource('/services', 'ServiceController');
-        Route::get('/services-index/data', 'ServiceController@indexData');
+        Route::get('/mail', 'OpaSocial\SyncController@mail');
+        Route::get('/synced', 'OpaSocial\SyncController@syncIndex');
+        Route::get('/synced-index/data', 'OpaSocial\SyncController@syncIndexData');
+        Route::resource('/services', 'OpaSocial\ServiceController');
+        Route::get('/services-index/data', 'OpaSocial\ServiceController@indexData');
         Route::resource('/currency', 'CurrencyController');
         Route::get('/currency-data', 'CurrencyController@IndexData');
         Route::get('/currency/edit/{id}', 'CurrencyController@edit');
         Route::delete('/currency/delete/{id}', 'CurrencyController@destroy');
         Route::get('/currency/create', 'CurrencyController@create');
         Route::post('/currency/store', 'CurrencyController@store');
-        Route::resource('/packages', 'PackageController');
-        Route::get('/packages-index/data', 'PackageController@indexData');
-        Route::post('/packages/ajax', 'PackageController@ajaxPost');
-        Route::post('/packages/ajax/{id}', 'PackageController@update');
-        Route::post('/packages/create', 'PackageController@ajaxPost');
+        Route::resource('/packages', 'OpaSocial\PackageController');
+        Route::get('/packages-index/data', 'OpaSocial\PackageController@indexData');
+        Route::post('/packages/ajax', 'OpaSocial\PackageController@ajaxPost');
+        Route::post('/packages/ajax/{id}', 'OpaSocial\PackageController@update');
+        Route::post('/packages/create', 'OpaSocial\PackageController@ajaxPost');
 
         Route::post('/users/package-special-prices/{id}', 'UserController@packageSpecialPrices');
         Route::resource('/users', 'UserController');
-        Route::resource('/groups', 'GroupController');
+        Route::resource('/groups', 'OpaSocial\GroupController');
         Route::post('/users/add-funds/{id}', 'UserController@addFunds');
         Route::get('/users-ajax/data', 'UserController@indexData');
-        Route::get('/groups-ajax/data', 'GroupController@indexData');
+        Route::get('/groups-ajax/data', 'OpaSocial\GroupController@indexData');
         Route::get('/users-referralajax/data', 'UserController@referralindexData');
         Route::get('/referral', 'UserController@referralindex');
 
         Route::post('/add-funds/admin', 'UserController@addFundsAdmin');
-        Route::post('order/search', 'OrderController@orderSearch');
-        Route::get('order/search', 'OrderController@orderSearch');
-        Route::post('/pending-orders-bulk-update', 'AutomateController@bulkUpdatePending');
+        Route::post('order/search', 'OpaSocial\OrderController@orderSearch');
+        Route::get('order/search', 'OpaSocial\OrderController@orderSearch');
+        Route::post('/pending-orders-bulk-update', 'OpaSocial\AutomateController@bulkUpdatePending');
 
-        Route::get('/dripfeed', 'DripFeedController@index');
-        Route::get('/dripfeed-index/data', 'DripFeedController@indexData');
-        Route::get('/dripfeed/edit/{dripfeed}', 'DripFeedController@edit');
-        Route::post('/dripfeed', 'DripFeedController@update');
-        Route::get('/dripfeed/{df}/details', 'DripFeedController@details');
-        Route::get('/orders-filters/manual', 'OrderController@indexmanual');
-        Route::get('/orders-filters-ajax/manual/data', 'OrderController@indexDataManual');
-        Route::get('/autolike', 'AutoLikeController@index');
-        Route::get('/autolike-index/data', 'AutoLikeController@indexData');
-        Route::get('/autolike/edit/{autolike}', 'AutoLikeController@edit');
-        Route::post('/autolike', 'AutoLikeController@update');
-        Route::get('/autolike/{al}/details', 'AutoLikeController@details');
+        Route::get('/dripfeed', 'OpaSocial\DripFeedController@index');
+        Route::get('/dripfeed-index/data', 'OpaSocial\DripFeedController@indexData');
+        Route::get('/dripfeed/edit/{dripfeed}', 'OpaSocial\DripFeedController@edit');
+        Route::post('/dripfeed', 'OpaSocial\DripFeedController@update');
+        Route::get('/dripfeed/{df}/details', 'OpaSocial\DripFeedController@details');
+        Route::get('/orders-filters/manual', 'OpaSocial\OrderController@indexmanual');
+        Route::get('/orders-filters-ajax/manual/data', 'OpaSocial\OrderController@indexDataManual');
+        Route::get('/autolike', 'OpaSocial\AutoLikeController@index');
+        Route::get('/autolike-index/data', 'OpaSocial\AutoLikeController@indexData');
+        Route::get('/autolike/edit/{autolike}', 'OpaSocial\AutoLikeController@edit');
+        Route::post('/autolike', 'OpaSocial\AutoLikeController@update');
+        Route::get('/autolike/{al}/details', 'OpaSocial\AutoLikeController@details');
 
         Route::get('/points-history', 'UserController@getRedeemHistory');
         Route::get('/points-history/data', 'UserController@getRedeemHistoryData');
         Route::put('/users/point-funds/{id}', 'UserController@redeemAccept');
         Route::put('/users/point-fundsreject/{id}', 'UserController@redeemReject');
-        Route::resource('/orders', 'OrderController');
-        Route::post('/order/{id}/complete', 'OrderController@completeOrder');
-        Route::get('/orders-ajax/data', 'OrderController@indexData');
-        Route::post('/orders-bulk-update', 'OrderController@bulkUpdate');
-        Route::get('/orders-filter/{status}', 'OrderController@indexFilter');
-        Route::get('/orders-filter-ajax/{status}/data', 'OrderController@indexFilterData');
+        Route::resource('/orders', 'OpaSocial\OrderController');
+        Route::post('/order/{id}/complete', 'OpaSocial\OrderController@completeOrder');
+        Route::get('/orders-ajax/data', 'OpaSocial\OrderController@indexData');
+        Route::post('/orders-bulk-update', 'OpaSocial\OrderController@bulkUpdate');
+        Route::get('/orders-filter/{status}', 'OpaSocial\OrderController@indexFilter');
+        Route::get('/orders-filter-ajax/{status}/data', 'OpaSocial\OrderController@indexFilterData');
 
-        Route::get('/subscriptions', 'SubscriptionController@index');
-        Route::get('/subscriptions-index/data', 'SubscriptionController@indexData');
-        Route::get('/subscriptions/{id}/edit', 'SubscriptionController@edit');
-        Route::post('/subscriptions/{id}', 'SubscriptionController@update');
-        Route::put('/subscriptions/{id}/cancel', 'SubscriptionController@cancel');
-        Route::put('/subscriptions/{id}/stop', 'SubscriptionController@stop');
-        Route::get('/subscriptions/{id}/orders', 'SubscriptionController@orders');
-        Route::post('/subscriptions/{id}/order', 'SubscriptionController@storeOrder');
-        Route::get('/subscriptions-filter/{status}', 'SubscriptionController@indexFilter');
-        Route::get('/subscriptions-filter-ajax/{status}/data', 'SubscriptionController@indexFilterData');
+        Route::get('/subscriptions', 'OpaSocial\SubscriptionController@index');
+        Route::get('/subscriptions-index/data', 'OpaSocial\SubscriptionController@indexData');
+        Route::get('/subscriptions/{id}/edit', 'OpaSocial\SubscriptionController@edit');
+        Route::post('/subscriptions/{id}', 'OpaSocial\SubscriptionController@update');
+        Route::put('/subscriptions/{id}/cancel', 'OpaSocial\SubscriptionController@cancel');
+        Route::put('/subscriptions/{id}/stop', 'OpaSocial\SubscriptionController@stop');
+        Route::get('/subscriptions/{id}/orders', 'OpaSocial\SubscriptionController@orders');
+        Route::post('/subscriptions/{id}/order', 'OpaSocial\SubscriptionController@storeOrder');
+        Route::get('/subscriptions-filter/{status}', 'OpaSocial\SubscriptionController@indexFilter');
+        Route::get('/subscriptions-filter-ajax/{status}/data', 'OpaSocial\SubscriptionController@indexFilterData');
 
         Route::get('/broadcast', 'BroadcastController@index');
         Route::get('/broadcast-index/data', 'BroadcastController@indexData');
@@ -409,32 +412,32 @@ Route::group(
         Route::get('/pages', 'PageController@index');
         Route::get('/page-edit/{slug}', 'PageController@edit');
         Route::put('/page-edit/{id}', 'PageController@update');
-        Route::get('/automate/api/addmxz', 'AutomateController@addApimxz');
-        Route::post('/automate/api/addmxz', 'AutomateController@storeApimxz');
-        Route::get('/automate/api/addperfectpanel', 'AutomateController@addApiperfect');
-        Route::post('/automate/api/addperfectpanel', 'AutomateController@storeApiperfect');
-        Route::get('/automate/api-list', 'AutomateController@listApi');
-        Route::get('/automate/send-orders', 'AutomateController@sendOrdersIndex');
-        Route::get('/automate/send-orders-index/data', 'AutomateController@sendOrdersIndexData');
-        Route::post('/automate/send-order-to-api', 'AutomateController@sendOrderToApi');
+        Route::get('/automate/api/addmxz', 'OpaSocial\AutomateController@addApimxz');
+        Route::post('/automate/api/addmxz', 'OpaSocial\AutomateController@storeApimxz');
+        Route::get('/automate/api/addperfectpanel', 'OpaSocial\AutomateController@addApiperfect');
+        Route::post('/automate/api/addperfectpanel', 'OpaSocial\AutomateController@storeApiperfect');
+        Route::get('/automate/api-list', 'OpaSocial\AutomateController@listApi');
+        Route::get('/automate/send-orders', 'OpaSocial\AutomateController@sendOrdersIndex');
+        Route::get('/automate/send-orders-index/data', 'OpaSocial\AutomateController@sendOrdersIndexData');
+        Route::post('/automate/send-order-to-api', 'OpaSocial\AutomateController@sendOrderToApi');
 
-        Route::get('/automate/response-logs', 'AutomateController@getResponseLogsIndex');
-        Route::get('/automate/response-logs-index/data', 'AutomateController@getResponseLogsIndexData');
-        Route::get('notification/{id}', 'OrderController@notification');
+        Route::get('/automate/response-logs', 'OpaSocial\AutomateController@getResponseLogsIndex');
+        Route::get('/automate/response-logs-index/data', 'OpaSocial\AutomateController@getResponseLogsIndexData');
+        Route::get('notification/{id}', 'OpaSocial\OrderController@notification');
 
-        Route::get('/refills/list', 'RefillRequestController@index');
-        Route::get('/refills-ajax/data', 'RefillRequestController@indexData');
-        Route::get('/refills-filter/{status}', 'RefillRequestController@indexFilter');
-        Route::get('/refills-filter-ajax/{status}/data', 'RefillRequestController@indexFilterData');
-        Route::get('/refills/{order}/details', 'RefillRequestController@details');
-        Route::get('/refill/{refill}/{status}', 'RefillRequestController@changeStatus');
+        Route::get('/refills/list', 'OpaSocial\RefillRequestController@index');
+        Route::get('/refills-ajax/data', 'OpaSocial\RefillRequestController@indexData');
+        Route::get('/refills-filter/{status}', 'OpaSocial\RefillRequestController@indexFilter');
+        Route::get('/refills-filter-ajax/{status}/data', 'OpaSocial\RefillRequestController@indexFilterData');
+        Route::get('/refills/{order}/details', 'OpaSocial\RefillRequestController@details');
+        Route::get('/refill/{refill}/{status}', 'OpaSocial\RefillRequestController@changeStatus');
 
-        Route::get('/automate/api/add', 'AutomateController@addApi');
-        Route::post('/automate/api/add', 'AutomateController@storeApi');
-        Route::get('/automate/api/{id}/edit', 'AutomateController@editApi');
-        Route::delete('/automate/api/{id}', 'AutomateController@deleteApi');
-        Route::put('/automate/api/{id}', 'AutomateController@updateApi');
-        Route::post('/automate/api/mapping/{id}', 'AutomateController@storeMapping');
+        Route::get('/automate/api/add', 'OpaSocial\AutomateController@addApi');
+        Route::post('/automate/api/add', 'OpaSocial\AutomateController@storeApi');
+        Route::get('/automate/api/{id}/edit', 'OpaSocial\AutomateController@editApi');
+        Route::delete('/automate/api/{id}', 'OpaSocial\AutomateController@deleteApi');
+        Route::put('/automate/api/{id}', 'OpaSocial\AutomateController@updateApi');
+        Route::post('/automate/api/mapping/{id}', 'OpaSocial\AutomateController@storeMapping');
         //Copuon routes
         Route::get('/coupons', 'CouponController@index');
         Route::get('/coupons/create', 'CouponController@create');
@@ -446,12 +449,12 @@ Route::group(
         Route::delete('/coupons/history/{id}', 'CouponController@destroyhistory');
         Route::get('/coupons-ajax/data', 'CouponController@indexData');
         Route::get('/coupons-history-ajax/data', 'CouponController@history');
-        Route::get('/refill-complete', 'RefillRequestController@completeStatus');
+        Route::get('/refill-complete', 'OpaSocial\RefillRequestController@completeStatus');
 
-        Route::get('/automate/get-status', 'AutomateController@getOrderStatusIndex');
-        Route::get('/automate/get-status-index/data', 'AutomateController@getOrderStatusIndexData');
-        Route::post('/automate/get-status-from-api', 'AutomateController@getOrderStatusFromAPI');
-        Route::post('/automate/change-reseller', 'AutomateController@changeReseller');
+        Route::get('/automate/get-status', 'OpaSocial\AutomateController@getOrderStatusIndex');
+        Route::get('/automate/get-status-index/data', 'OpaSocial\AutomateController@getOrderStatusIndexData');
+        Route::post('/automate/get-status-from-api', 'OpaSocial\AutomateController@getOrderStatusFromAPI');
+        Route::post('/automate/change-reseller', 'OpaSocial\AutomateController@changeReseller');
 
         Route::get('/system/refresh', 'DashboardController@refreshSystem');
     }

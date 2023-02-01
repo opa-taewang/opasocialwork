@@ -38975,93 +38975,163 @@ var Errors = /*#__PURE__*/function () {
     value: function record(errors) {
       this.errors = errors.errors;
     }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.errors = {};
+    }
   }]);
   return Errors;
 }();
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['productId', 'status'],
+  props: [],
   mounted: function mounted() {
+    // console.log(axios);
     console.log('Component mounted.');
   },
   data: function data() {
     return {
-      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      // csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
       statusChange: this.status,
       orderCategories: [],
       orderServices: [],
       errors: new Errors(),
-      orderCategory: 'Choose state',
-      orderService: 'Choose category area',
-      orderQuantity: 0,
+      orderCategory: 'Select a category',
+      orderService: 'Select a service',
+      orderQuantity: '',
+      orderMin: 0,
+      orderMax: 0,
       orderLink: '',
       orderCharge: 0,
       newOrderDescription: '',
       customComments: '',
       isCustomComment: false,
-      convert: ''
+      convert: '',
+      pricePerItem: 0,
+      refillPeriod: 'NO',
+      performance: 'Not Enough Data',
+      currencySymbol: '',
+      serviceFeature: 'NO',
+      autoDelaySelect: [0, 5, 10, 15, 20, 30, 60, 90, 120, 150, 210, 240, 270, 300, 360, 420, 480, 540, 600],
+      autoUsername: '',
+      autoNewPost: '',
+      autoOldPost: '',
+      autoMin: '',
+      autoMax: '',
+      autoDelay: '',
+      autoExpiry: '',
+      isDripFeedEnabled: false,
+      dripFeedSelect: '',
+      runs: this.runs,
+      interval: this.interval,
+      isEmpty: true
     };
+  },
+  watch: {
+    // orderService(){
+    //     // console.log(orderService);
+    // }
   },
   components: {},
   created: function created() {
     this.fetchOrderCategory();
-    // this.fetchLGAreas();
+    this.orderCategory = 'Select a category';
   },
-
   methods: {
-    clearError: function clearError() {
-      console.log('ksksk');
+    matchHeight: function matchHeight() {
+      var heightString = this.$refs.newOrderDescription.$el.clientHeight + 'px';
+      Vue.set(this.leftColStyles, 'height', heightString);
+    },
+    clearInput: function clearInput() {
+      this.newOrderDescription = '';
+      this.isCustomComment = false;
+      this.pricePerItem = 0;
+      this.serviceFeature = 'NO';
+      this.orderLink = '';
+      this.orderQuantity = '', this.errors.clear();
+    },
+    addOrderQuantity: function addOrderQuantity() {
+      var text = this.customComments.trim();
+      var lines = text.split(/\r|\r\n|\n/);
+      var sorted = lines.filter(function (v) {
+        return v;
+      });
+      this.orderQuantity = sorted.length;
+    },
+    orderServiceChange: function orderServiceChange(event) {
+      for (var i = 0; i < this.orderServices.length; i++) {
+        if (this.orderServices[i].id == event.target.value) {
+          this.newOrderDescription = this.orderServices[i].description;
+          this.refillPeriod = this.orderServices[i].refill_period ? this.orderServices[i].refill_period + ' days' : 'NO';
+          this.performance = this.orderServices[i].performance;
+          this.isCustomComment = this.orderServices[i].custom_comments == 1 ? true : false;
+          this.serviceFeature = this.orderServices[i].features;
+          this.pricePerItem = this.orderServices[i].converted_price;
+          this.orderMin = this.orderServices[i].minimum_quantity;
+          this.orderMax = this.orderServices[i].maximum_quantity;
+          // this.matchHeight()
+        }
+      }
+
+      this.errors.clear();
+      this.orderQuantity = '';
+      this.autoUsername = '', this.autoNewPost = '', this.autoOldPost = '', this.autoMin = '', this.autoMax = '', this.autoDelay = '', this.autoExpiry = '';
     },
     fetchOrderCategory: function fetchOrderCategory() {
       var _this = this;
-      axios.get('order/category').then(function (response) {
+      axios.get('orders/category').then(function (response) {
         _this.orderCategories = response.data;
       });
     },
     fetchOrderService: function fetchOrderService() {
       var _this2 = this;
-      axios.get('order/service/' + this.orderCategory).then(function (response) {
-        _this2.orderServices = response.data;
+      axios.get('orders/service/' + this.orderCategory).then(function (response) {
+        _this2.orderServices = response.data.service;
+        _this2.currencySymbol = response.data.currency_symbol;
       });
     },
     placeOrder: function placeOrder() {
       var _this3 = this;
-      axios.post('/add-shipping-address', {
-        quantity: this.quantity,
-        link: this.link,
-        dripfeed: this.dripfeedselect,
+      axios.post('/orders', {
+        orderService: this.orderService,
+        orderQuantity: this.orderQuantity,
+        orderLink: this.orderLink,
+        // Auto subscription options
+        autoUsername: this.autoUsername,
+        autoOldPost: this.autoOldPost,
+        autoNewPost: this.autoNewPost,
+        autoMin: this.autoMin,
+        autoMax: this.autoMax,
+        autoDelay: this.autoDelay,
+        autoExpiry: this.autoExpiry,
+        // dripfeed options
+        dripFeedSelect: this.dripFeedSelect,
         runs: this.runs,
-        interval: this.interval,
-        autolike: this.autolike,
-        username: this.username,
-        minqty: this.minqty,
-        maxqty: this.maxqty,
-        oldPosts: this.postcount,
-        NewPosts: this.postcount
+        interval: this.interval
+        // autolike:this.autolike,
       }).then(function (response) {
-        response.data.type == 'success' ? toastr.success(response.data.message) : toastr.warning(response.data.message);
-        window.location = '/';
+        console.log(response.data);
+        // response.data.type == 'success' ? toastr.success(response.data.message) : toastr.warning(response.data.message);
+        // window.location = '/';
       })["catch"](function (error) {
+        console.log(error.response.data);
         _this3.errors.record(error.response.data);
       });
     }
   },
   computed: {
-    // setOrderPrice() {
-    //     this.orderPrice = orderService.price_per_item * this.orderQuantity
-    // },
-    // setNewOrderDescription() {
-    //     this.newOrderDescription = orderService.description
-    // },
-    // setIsCustomComment() {
+    isEmpty: function isEmpty() {
+      return this.isEmpty = this.orderCategory == 'Select a category' || this.orderService == 'Select a service' ? true : false;
+    },
+    orderCharge: function orderCharge() {
+      if (isNaN(this.orderQuantity)) {
+        return 0;
+      }
+      return this.currencySymbol + this.pricePerItem * this.orderQuantity;
+    } // setIsCustomComment() {
     //     // this.orderService = orderService.id,
     //     this.isCustomComment = orderService.custom_comments == 1 ? true : false
     // },
-    btnStyles: function btnStyles() {
-      return {
-        'btn-success': this.statusChange == 1 ? true : false,
-        'btn-danger': this.statusChange != 1 ? true : false
-      };
-    }
   }
 });
 
@@ -39092,10 +39162,9 @@ var _hoisted_3 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
 }, "Category", -1 /* HOISTED */);
 var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
   selected: "",
-  disabled: "",
-  value: ""
+  disabled: ""
 }, "Select a category", -1 /* HOISTED */);
-var _hoisted_5 = ["value", "textContent"];
+var _hoisted_5 = ["value"];
 var _hoisted_6 = {
   "class": "invalid-feedback"
 };
@@ -39106,89 +39175,205 @@ var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
   "for": "orderService",
   "class": "form-label"
 }, "Service", -1 /* HOISTED */);
-var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-  selected: "",
-  disabled: "",
-  value: ""
-}, "Select category first", -1 /* HOISTED */);
-var _hoisted_10 = ["value", "textContent"];
-var _hoisted_11 = {
+var _hoisted_9 = ["value"];
+var _hoisted_10 = {
   "class": "invalid-feedback"
 };
-var _hoisted_12 = {
+var _hoisted_11 = {
   "class": "col-md-12"
 };
-var _hoisted_13 = {
+var _hoisted_12 = {
   "class": "mb-3"
 };
-var _hoisted_14 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+var _hoisted_13 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
   "for": "newOrderDescription",
   "class": "form-label"
 }, "Description", -1 /* HOISTED */);
-var _hoisted_15 = ["textContent"];
+var _hoisted_14 = ["textContent"];
+var _hoisted_15 = {
+  "class": "row"
+};
 var _hoisted_16 = {
+  "class": "col-6"
+};
+var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h6", null, "Refill", -1 /* HOISTED */);
+var _hoisted_18 = {
+  "class": "text-muted fw-bold"
+};
+var _hoisted_19 = {
+  "class": "col-6"
+};
+var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h6", null, "Performance", -1 /* HOISTED */);
+var _hoisted_21 = {
+  "class": "text-muted fw-bold"
+};
+var _hoisted_22 = {
+  key: 0
+};
+var _hoisted_23 = {
   "class": "col-md-12"
 };
-var _hoisted_17 = {
+var _hoisted_24 = {
   "class": "mb-3"
 };
-var _hoisted_18 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+var _hoisted_25 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
   "for": "orderLink",
   "class": "form-label"
 }, "Link", -1 /* HOISTED */);
-var _hoisted_19 = {
-  "class": "invalid-feedback"
+var _hoisted_26 = {
+  "class": "text-danger",
+  role: "alert"
 };
-var _hoisted_20 = {
+var _hoisted_27 = {
   "class": "col-md-12"
 };
-var _hoisted_21 = {
+var _hoisted_28 = {
   "class": "mb-3"
 };
-var _hoisted_22 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+var _hoisted_29 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
   "for": "orderQuantity",
   "class": "form-label"
 }, "Quantity", -1 /* HOISTED */);
-var _hoisted_23 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", {
-  "class": "text-muted"
-}, "Min:10 - Max:50", -1 /* HOISTED */);
-var _hoisted_24 = {
-  "class": "invalid-feedback"
+var _hoisted_30 = {
+  "class": "text-danger",
+  role: "alert"
 };
-var _hoisted_25 = {
+var _hoisted_31 = {
+  "class": "text-muted"
+};
+var _hoisted_32 = {
   key: 0,
   "class": "col-md-12"
 };
-var _hoisted_26 = {
+var _hoisted_33 = {
   "class": "mb-3"
 };
-var _hoisted_27 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "for": "newOrderDescription",
+var _hoisted_34 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  "for": "customComments",
   "class": "form-label"
-}, "Link", -1 /* HOISTED */);
-var _hoisted_28 = {
+}, "Comments(1 per line)", -1 /* HOISTED */);
+var _hoisted_35 = {
+  "class": "text-danger",
+  role: "alert"
+};
+var _hoisted_36 = {
   "class": "col-md-12"
 };
-var _hoisted_29 = {
+var _hoisted_37 = {
   "class": "mb-3"
 };
-var _hoisted_30 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+var _hoisted_38 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
   "for": "orderCharge",
   "class": "form-label"
 }, "Charge", -1 /* HOISTED */);
-var _hoisted_31 = ["textContent"];
-var _hoisted_32 = {
+var _hoisted_39 = {
   "class": "invalid-feedback"
 };
-var _hoisted_33 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-  "class": "btn btn-primary",
-  type: "submit"
-}, "Place Order")], -1 /* HOISTED */);
-
+var _hoisted_40 = {
+  key: 1
+};
+var _hoisted_41 = {
+  "class": "col-md-12"
+};
+var _hoisted_42 = {
+  "class": "mb-3"
+};
+var _hoisted_43 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  "for": "autoUsername",
+  "class": "form-label"
+}, "Username", -1 /* HOISTED */);
+var _hoisted_44 = {
+  "class": "text-danger",
+  role: "alert"
+};
+var _hoisted_45 = {
+  "class": "row"
+};
+var _hoisted_46 = {
+  "class": "col-md-6 col-md-6"
+};
+var _hoisted_47 = {
+  "class": "mb-3"
+};
+var _hoisted_48 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  "for": "autoNewPost",
+  "class": "form-label"
+}, "New posts", -1 /* HOISTED */);
+var _hoisted_49 = {
+  "class": "text-danger",
+  role: "alert"
+};
+var _hoisted_50 = {
+  "class": "col-md-6 col-md-6"
+};
+var _hoisted_51 = {
+  "class": "mb-3"
+};
+var _hoisted_52 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  "for": "autoOldPost",
+  "class": "form-label"
+}, "Old posts", -1 /* HOISTED */);
+var _hoisted_53 = {
+  "class": "text-danger",
+  role: "alert"
+};
+var _hoisted_54 = {
+  "class": "mb-3"
+};
+var _hoisted_55 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  "for": "autoMin",
+  "class": "form-label"
+}, "Quantity", -1 /* HOISTED */);
+var _hoisted_56 = {
+  "class": "row"
+};
+var _hoisted_57 = {
+  "class": "col-md-6 mb-3"
+};
+var _hoisted_58 = {
+  "class": "text-danger",
+  role: "alert"
+};
+var _hoisted_59 = {
+  "class": "col-md-6"
+};
+var _hoisted_60 = {
+  "class": "text-danger",
+  role: "alert"
+};
+var _hoisted_61 = {
+  "class": "text-muted"
+};
+var _hoisted_62 = {
+  "class": "row"
+};
+var _hoisted_63 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  "for": "autodelay",
+  "class": "form-label"
+}, "Delay", -1 /* HOISTED */);
+var _hoisted_64 = ["value"];
+var _hoisted_65 = {
+  "class": "text-danger",
+  role: "alert"
+};
+var _hoisted_66 = {
+  "class": "col-md-6"
+};
+var _hoisted_67 = {
+  "class": "mb-3"
+};
+var _hoisted_68 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  "for": "autoExpiry",
+  "class": "form-label"
+}, "Expiry", -1 /* HOISTED */);
+var _hoisted_69 = {
+  "class": "text-danger",
+  role: "alert"
+};
+var _hoisted_70 = ["disabled"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  var _directive_csrf_token = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveDirective)("csrf-token");
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)(((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("form", {
-    onSubmit: _cache[9] || (_cache[9] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("form", {
+    onSubmit: _cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.placeOrder && $options.placeOrder.apply($options, arguments);
     }, ["prevent"])),
     method: "post",
@@ -39198,7 +39383,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)([{
       'form-group': true,
       'has-error': 'errors.state'
-    }, "mb-3"])
+    }, "mb-3"]),
+    onChange: _cache[2] || (_cache[2] = function ($event) {
+      return $options.clearInput();
+    })
   }, [_hoisted_3, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     "class": "form-select",
     "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
@@ -39213,75 +39401,167 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, [_hoisted_4, ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.orderCategories, function (orderCategory) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
       value: orderCategory.id,
-      textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(orderCategory.name),
       key: orderCategory.id
-    }, null, 8 /* PROPS */, _hoisted_5);
-  }), 128 /* KEYED_FRAGMENT */))], 544 /* HYDRATE_EVENTS, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.orderCategory]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('orderCategory')), 1 /* TEXT */)], 2 /* CLASS */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(orderCategory.name), 9 /* TEXT, PROPS */, _hoisted_5);
+  }), 128 /* KEYED_FRAGMENT */))], 544 /* HYDRATE_EVENTS, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.orderCategory]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('orderCategory')), 1 /* TEXT */)], 34 /* CLASS, HYDRATE_EVENTS */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)([{
       'form-group': true,
       'has-error': 'errors.lga'
     }, "mb-3"])
   }, [_hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     "class": "form-select",
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
       return $data.orderService = $event;
     }),
     id: "orderService",
-    name: "orderService",
-    onChange: _cache[4] || (_cache[4] = function ($event) {
-      return _ctx.setOrder();
+    onChange: _cache[5] || (_cache[5] = function ($event) {
+      return $options.orderServiceChange($event);
     }),
+    name: "orderService",
     required: ""
-  }, [_hoisted_9, ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.orderServices, function (orderService) {
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <option disabled>Select category first</option> "), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.orderServices, function (orderService) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      value: orderService,
-      textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(orderService.id + '-' + orderService.name + ' - ' + orderService.per_1000 + ' per 1000'),
+      value: orderService.id,
       key: orderService.id,
-      onChange: _cache[2] || (_cache[2] = function ($event) {
-        return $options.clearError();
+      onChange: _cache[3] || (_cache[3] = function ($event) {
+        return _ctx.clearError();
       })
-    }, null, 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_10);
-  }), 128 /* KEYED_FRAGMENT */))], 544 /* HYDRATE_EVENTS, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.orderService]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('orderService')), 1 /* TEXT */)], 2 /* CLASS */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Condition for normal order start "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" v-if=\"orderCategory.subscription_allowed == 1\" "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [_hoisted_14, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(orderService.id + '-' + orderService.name + ' - ' + orderService.per_1000 + ' per 1000'), 41 /* TEXT, PROPS, HYDRATE_EVENTS */, _hoisted_9);
+  }), 128 /* KEYED_FRAGMENT */))], 544 /* HYDRATE_EVENTS, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.orderService]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('orderService')), 1 /* TEXT */)], 2 /* CLASS */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" v-if=\"orderCategory.subscription_allowed == 1\" "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [_hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     id: "newOrderDescription",
-    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
       return $data.newOrderDescription = $event;
     }),
-    textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.setNewOrderDescription),
+    textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.newOrderDescription),
+    ref: "newOrderDescription",
     required: "",
     "class": "form-control",
-    rows: "6",
+    rows: "4",
     readonly: ""
-  }, null, 8 /* PROPS */, _hoisted_15), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.newOrderDescription]])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [_hoisted_18, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, null, 8 /* PROPS */, _hoisted_14), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.newOrderDescription]])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [_hoisted_17, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_18, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.refillPeriod), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [_hoisted_20, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_21, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.performance), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Condition for normal order start "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Check if order feature is NO "), $data.serviceFeature == 'NO' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [_hoisted_25, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "class": "form-control",
     id: "orderLink",
-    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
       return $data.orderLink = $event;
     }),
     required: ""
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.orderLink]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('additional_street_address')), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [_hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.orderLink]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('orderLink')), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [_hoisted_29, $data.isCustomComment ? (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)(((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("input", {
+    key: 0,
     type: "text",
     "class": "form-control",
     id: "orderQuantity",
-    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
+    name: "orderQuantity",
+    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
       return $data.orderQuantity = $event;
     }),
+    onChange: _cache[9] || (_cache[9] = function () {
+      return _ctx.setOrderPrice && _ctx.setOrderPrice.apply(_ctx, arguments);
+    }),
+    readonly: ""
+  }, null, 544 /* HYDRATE_EVENTS, NEED_PATCH */)), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.orderQuantity]]) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)(((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("input", {
+    key: 1,
+    type: "text",
+    "class": "form-control",
+    id: "orderQuantity",
+    name: "orderQuantity",
+    "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
+      return $data.orderQuantity = $event;
+    }),
+    onChange: _cache[11] || (_cache[11] = function () {
+      return _ctx.setOrderPrice && _ctx.setOrderPrice.apply(_ctx, arguments);
+    }),
     required: ""
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.orderQuantity]]), _hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('additional_street_address')), 1 /* TEXT */)])]), $data.isCustomComment ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [_hoisted_27, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
+  }, null, 544 /* HYDRATE_EVENTS, NEED_PATCH */)), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.orderQuantity]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('orderQuantity')), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_31, "Min: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.orderMin) + " - Max: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.orderMax), 1 /* TEXT */)])]), $data.isCustomComment ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [_hoisted_34, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     id: "customComments",
-    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
+    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
       return $data.customComments = $event;
     }),
+    onKeyup: _cache[13] || (_cache[13] = function () {
+      return $options.addOrderQuantity && $options.addOrderQuantity.apply($options, arguments);
+    }),
     "class": "form-control",
-    rows: "10"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.customComments]])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [_hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    rows: "6"
+  }, null, 544 /* HYDRATE_EVENTS, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.customComments]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('customComments')), 1 /* TEXT */)])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_36, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_37, [_hoisted_38, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "class": "form-control",
     id: "orderCharge",
-    textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.setOrderPrice),
-    name: "orderCharge",
+    "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
+      return $options.orderCharge = $event;
+    }),
     readonly: ""
-  }, null, 8 /* PROPS */, _hoisted_31), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('additional_street_address')), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Condition for normal order ends "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Condition For auto subscription starts ")]), _hoisted_33], 32 /* HYDRATE_EVENTS */)), [[_directive_csrf_token]]);
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $options.orderCharge]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_39, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('additional_street_address')), 1 /* TEXT */)])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Condition for normal order ends "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Condition For auto subscription starts "), $data.serviceFeature == 'AUTO' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_40, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_41, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_42, [_hoisted_43, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    "class": "form-control",
+    id: "autoUsername",
+    "onUpdate:modelValue": _cache[15] || (_cache[15] = function ($event) {
+      return $data.autoUsername = $event;
+    }),
+    required: ""
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.autoUsername]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_44, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('autoUsername')), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_46, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_47, [_hoisted_48, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    "class": "form-control",
+    id: "autoNewPost",
+    "onUpdate:modelValue": _cache[16] || (_cache[16] = function ($event) {
+      return $data.autoNewPost = $event;
+    })
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.autoNewPost]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_49, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('autoNewPost')), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_50, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_51, [_hoisted_52, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    "class": "form-control",
+    id: "autoOldPost",
+    "onUpdate:modelValue": _cache[17] || (_cache[17] = function ($event) {
+      return $data.autoOldPost = $event;
+    }),
+    required: ""
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.autoOldPost]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_53, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('autoOldPost')), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_54, [_hoisted_55, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_56, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_57, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    "class": "form-control",
+    id: "autoMin",
+    "onUpdate:modelValue": _cache[18] || (_cache[18] = function ($event) {
+      return $data.autoMin = $event;
+    }),
+    placeholder: "Min",
+    required: ""
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.autoMin]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_58, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('autoMin')), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_59, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    "class": "form-control",
+    id: "autoMax",
+    "onUpdate:modelValue": _cache[19] || (_cache[19] = function ($event) {
+      return $data.autoMax = $event;
+    }),
+    placeholder: "Max",
+    required: ""
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.autoMax]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_60, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('autoMax')), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_61, "Min: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.orderMin) + " - Max: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.orderMax), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_62, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"col-md-6\"> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)([{
+      'form-group': true,
+      'has-error': 'errors.autoDelay'
+    }, "col-md-6 mb-3"])
+  }, [_hoisted_63, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "class": "form-select",
+    "onUpdate:modelValue": _cache[20] || (_cache[20] = function ($event) {
+      return $data.autoDelay = $event;
+    }),
+    id: "autodelay",
+    name: "autodelay",
+    required: ""
+  }, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.autoDelaySelect, function (autoDelay) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
+      value: autoDelay,
+      key: autoDelay
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(autoDelay == 0 ? 'No Delay' : autoDelay + ' Minutes'), 9 /* TEXT, PROPS */, _hoisted_64);
+  }), 128 /* KEYED_FRAGMENT */))], 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.autoDelay]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_65, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('autoDelay')), 1 /* TEXT */)], 2 /* CLASS */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" </div> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_66, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_67, [_hoisted_68, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <input class=\"form-control\" type=\"date\" value=\"2019-08-19\" id=\"example-date-input\"> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "date",
+    "class": "form-control",
+    id: "autoExpiry",
+    "onUpdate:modelValue": _cache[21] || (_cache[21] = function ($event) {
+      return $data.autoExpiry = $event;
+    }),
+    required: ""
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.autoExpiry]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_69, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errors.get('autoExpiry')), 1 /* TEXT */)])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    "class": "btn btn-primary",
+    disabled: $options.isEmpty,
+    type: "submit"
+  }, "Place Order", 8 /* PROPS */, _hoisted_70)])], 32 /* HYDRATE_EVENTS */);
 }
 
 /***/ }),
@@ -39397,8 +39677,9 @@ try {
  */
 
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/dist/browser/axios.cjs");
+var user_token = $('meta[name="user-token"]').attr('content');
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
+window.axios.defaults.headers.common['Authorization'] = "Bearer ".concat(user_token);
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
