@@ -48,3 +48,5 @@ window.axios.defaults.headers.common['Authorization'] = `Bearer ${user_token}`;
 // window.flash = function (message) {
 //     window.events.$emit('flash', message);
 // };
+
+window.toastr = require('toastr');

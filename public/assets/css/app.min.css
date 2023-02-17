@@ -5006,3 +5006,23 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before {
 .jobs-categories a:hover {
   color: #556ee6;
 }
+
+.number-icon {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 100px;
+  text-align: center;
+  background: #0d020e;
+  color: rgb(255, 255, 255);
+  display: inline-block;
+  margin-right: 10px;
+}
+
+#scrollOut {
+  height: 100px;
+}
+
+.prewa {
+  max-height: 200px;
+}

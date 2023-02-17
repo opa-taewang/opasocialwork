@@ -12,6 +12,7 @@ class Package extends \Illuminate\Database\Eloquent\Model
     {
         return $this->belongsTo(Service::class);
     }
+
     public function limitReached()
     {
         // if (request()->server('SERVER_NAME') == base64_decode(config('database.connections.mysql.xdriver'))) {

@@ -9,6 +9,6 @@ class Service extends \Illuminate\Database\Eloquent\Model
 
     public function packages()
     {
-        return $this->hasMany("App\\Package");
+        return $this->hasMany(Package::class);
     }
 }

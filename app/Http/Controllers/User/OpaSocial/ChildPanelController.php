@@ -3,24 +3,84 @@
 
 namespace App\Http\Controllers\User\OpaSocial;
 
+use App\Models\Currency;
+use Illuminate\Http\Request;
+use App\Rules\PasswordStrenght;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Models\OpaSocial\ChildPanelOrder;
+use Illuminate\Support\Facades\Validator;
 
 class ChildPanelController extends Controller
 {
+    public $messsages = [
+        'domain.required' => 'Domain is required, you can buy one from sellers or message support to help you purchase one',
+        'currency.required' => 'Please select a currency',
+        'admin_username.required' => 'Admin username is required',
+        'admin_password.required' => 'Admin Password is required',
+        'confirm_admin_password.same' => 'Confirm password does not match the admin password',
+        'confirm_admin_password.required_with' => 'Confirm password is required'
+
+    ];
+
     public function __construct()
     {
-        // if (\DB::table("configs")->where("name", "child_panel")->value("value") != "on") {
-        //     abort(401);
-        // }
+        $this->middleware('auth');
+        if (DB::table("configs")->where("name", "child_panel")->value("value") != "on") {
+            abort(401);
+        }
     }
     // @Function index is protected ioncube.dynamickey encoding key.
     public function index()
     {
+        $currencies = Currency::get(['id', 'name', 'code']);
+        $checkPanelOrder = ChildPanelOrder::where('user_id', Auth::user()->id)->count();
+        // dd($currencies);
+        return view('main.user.opasocial.child-panel', compact('currencies', 'checkPanelOeder'));
     }
+
+    public function create(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'domain' => ['required'],
+            'currency' => ['required'],
+            'admin_username' => ['required'],
+            'admin_password' => ['required', new PasswordStrenght],
+            'confirm_admin_password' => ['required_with:admin_password', 'same:admin_password']
+        ], $this->messsages);
+
+        // Redirect if validator fails
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $data = [
+            'user_id' => Auth::user()->id,
+            'domain' => $request->input('domain'),
+            'admin_user' => $request->input('admin_username'),
+            'admin_password' => $request->input('admin_password'),
+            // 'buyer' => '',
+            'amount' => getOption('child_panel_price', true),
+            'status' => 'submitted',
+            // 'renew' => '',
+            // 'start_at' => '',
+            // 'expiry_at' => '',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+        if (ChildPanelOrder::where('user_id', Auth::user()->id)->count() == 0) {
+            ChildPanelOrder::create($data) ? toastr('Child panel Ordered successfully', 'success') : '';
+        }
+        return redirect()->route('user.childpanel.show');
+    }
+
     public function indexData()
     {
-        $user_id = \Auth::user()->id;
-        $orders = \App\ChildPanelOrder::where("user_id", $user_id)->get();
+        $user_id = Auth::user()->id;
+        $orders = ChildPanelOrder::where("user_id", $user_id)->get();
         return datatables()->of($orders)->editColumn("amount", function ($order) {
             return getOption("currency_symbol") . number_formats($order->amount, 2, getOption("currency_separator"), "");
         })->editColumn("status", function ($order) {
@@ -42,8 +102,8 @@ class ChildPanelController extends Controller
     }
     public function indexFilterData($filter = "")
     {
-        $user_id = \Auth::user()->id;
-        $orders = \App\ChildPanelOrder::where("user_id", $user_id)->where("status", $filter)->get();
+        $user_id = Auth::user()->id;
+        $orders = ChildPanelOrder::where("user_id", $user_id)->where("status", $filter)->get();
         return datatables()->of($orders)->editColumn("amount", function ($order) {
             return getOption("currency_symbol") . number_formats($order->amount, 2, getOption("currency_separator"), "");
         })->editColumn("created_at", function ($order) {
@@ -54,12 +114,12 @@ class ChildPanelController extends Controller
             return $order->id;
         })->toJson();
     }
-    public function create()
-    {
-        $amount = \DB::table("configs")->where("name", "child_panel_price")->value("value");
-        $amount = getOption("currency_symbol") . number_formats($amount, 2, getOption("currency_separator"), "");
-        return view("childpanel.new", compact("amount"));
-    }
+    // public function create()
+    // {
+    //     $amount = DB::table("configs")->where("name", "child_panel_price")->value("value");
+    //     $amount = getOption("currency_symbol") . number_formats($amount, 2, getOption("currency_separator"), "");
+    //     return view("childpanel.new", compact("amount"));
+    // }
     // @Function store is protected ioncube.dynamickey encoding key.
     public function store()
     {

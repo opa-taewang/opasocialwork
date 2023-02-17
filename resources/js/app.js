@@ -7,6 +7,8 @@
 // window.$ = jQuery;
 require('./custom/jquery/jquery.min.js');
 import './bootstrap';
+import * as ClipboardJS from "clipboard";
+new ClipboardJS('.copyBtn');
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 // require('./maain.js');
 
@@ -34,7 +36,16 @@ import * as VueRouter from "vue-router";
 // import  { createApp } from "vue";
 import newOrder from "./components/newOrder.vue";
 import autoSubscription from "./components/autoSubscription.vue";
-import favouriteService from "./components/favouriteService.vue";
+import favouriteService from "./components/addServiceToFavorite.vue";
+import supportOrder from "./components/supportOrder.vue";
+import supportPayment from "./components/supportPayment.vue";
+import supportChildPanel from "./components/supportChildPanel.vue";
+import supportApi from "./components/supportApi.vue";
+import supportBug from "./components/supportBug.vue";
+import supportRequest from "./components/supportRequest.vue";
+import supportPoint from "./components/supportPoint.vue";
+import supportNumber from "./components/supportNumber.vue";
+import supportOther from "./components/supportOther.vue";
 // Vue.component('example-componnent', require('./components/ExampleComponent.vue').default)
 
 // createApp(app).mount("#layout-wrapper")
@@ -60,6 +71,15 @@ const app = Vue.createApp();
 app.component('newOrder', newOrder);
 app.component('autoSubscription', autoSubscription);
 app.component('favouriteService', favouriteService);
+app.component('supportOrder', supportOrder);
+app.component('supportPayment', supportPayment);
+app.component('supportChildPanel', supportChildPanel);
+app.component('supportApi', supportApi);
+app.component('supportBug', supportBug);
+app.component('supportRequest', supportRequest);
+app.component('supportPoint', supportPoint);
+app.component('supportNumber', supportNumber);
+app.component('supportOther', supportOther);
 const mountedApp = app.mount('#vue_mount');
 // import * as Vue from 'vue'
 // window.Vue = require('vue');

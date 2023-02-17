@@ -8,11 +8,11 @@ class TicketMessage extends \Illuminate\Database\Eloquent\Model
     protected $fillable = ["content", "user_id", "ticket_id", "is_read"];
     public function ticket()
     {
-        return $this->belongsTo("App\\Ticket");
+        return $this->belongsTo(Ticket::class);
     }
     public function user()
     {
-        return $this->belongsTo("App\\User");
+        return $this->belongsTo(User::class);
     }
     public function getCreatedAtAttribute($date)
     {

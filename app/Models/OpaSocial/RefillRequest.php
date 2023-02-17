@@ -2,6 +2,8 @@
 
 namespace App\Models\OpaSocial;
 
+use App\Models\OpaSocial\Order;
+
 
 class RefillRequest extends \Illuminate\Database\Eloquent\Model
 {
@@ -9,7 +11,7 @@ class RefillRequest extends \Illuminate\Database\Eloquent\Model
 
     public function order()
     {
-        return $this->belongsTo("App\\Order");
+        return $this->belongsTo(Order::class);
     }
 
     public function getStatusAttribute($status)

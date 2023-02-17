@@ -8,7 +8,7 @@ class SubscriptionController extends Controller
 {
     public function __construct()
     {
-        // $this->middleware("App\\Http\\Middleware\\VerifyModuleSubscriptionEnabled");
+        $this->middleware('auth');
     }
 
     public function index()

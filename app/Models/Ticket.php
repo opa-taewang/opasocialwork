@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Auth;
+
 
 class Ticket extends \Illuminate\Database\Eloquent\Model
 {
     protected $appends = array("unread_message_count");
-    protected $fillable = array("topic", "request", "paymentmode", "transaction", "email", "amount", "orderids", "subject", "status", "description", "user_id", "is_read");
+    protected $fillable = array("subject", "request", "paymentmode", "contents", "status", "description", "user_id", "is_read");
 
 
     public function messages()
@@ -21,12 +23,17 @@ class Ticket extends \Illuminate\Database\Eloquent\Model
 
     public function getUnreadMessageCountAttribute()
     {
-        return $this->messages()->where(array("is_read" => false))->whereNotIn("user_id", array(\Illuminate\Support\Facades\Auth::user()->id))->count();
+        return $this->messages()->where(array("is_read" => false))->whereNotIn("user_id", array(Auth::user()->id))->count();
     }
+
+    // public function getStatusAttribute($status)
+    // {
+    //     return title_case($status);
+    // }
 
     public function getStatusAttribute($status)
     {
-        return title_case($status);
+        return $status;
     }
 
     public function getCreatedAtAttribute($date)

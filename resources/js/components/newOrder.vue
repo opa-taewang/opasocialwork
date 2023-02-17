@@ -254,6 +254,9 @@ class Errors{
 
 
         methods: {
+            redirectMe() {
+                this.$router.push('/');
+            },
             matchHeight() {
                 var heightString = this.$refs.newOrderDescription.$el.clientHeight + 'px';
                 Vue.set(this.leftColStyles, 'height', heightString);
@@ -329,9 +332,11 @@ class Errors{
                     // autolike:this.autolike,
                     })
                 .then(function (response) {
-                    console.log(response.data)
+                    // console.log(response.data)
+                    // this.redirectMe();
                         // response.data.type == 'success' ? toastr.success(response.data.message) : toastr.warning(response.data.message);
-                        // window.location = '/';
+                    // $router.back()
+                        window.location.href = '/';
                 }).catch(error => {
                     console.log(error.response.data)
                         this.errors.record(error.response.data)

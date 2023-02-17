@@ -1,9 +1,91 @@
 <?php
 
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\FundChange;
+use App\Models\OpaSocial\Order;
+use App\Models\OpaSocial\Package;
+use App\Models\OpaSocial\Service;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use App\Models\OpaSocial\UserPackagePrice;
+
+if (!function_exists('usersName')) :
+    function usersName($id)
+    {
+        $user = User::findorfail($id);
+        return $user->name;
+    }
+endif;
+
+if (!function_exists('truncate')) :
+    function truncate($text, $chars = 25)
+    {
+        if (strlen($text) <= $chars) {
+            return $text;
+        }
+        $text = $text . " ";
+        $text = substr($text, 0, $chars);
+        $text = substr($text, 0, strrpos($text, ' '));
+        $text = $text . "...";
+        return $text;
+    }
+endif;
+
+if (!function_exists('getPackages')) :
+    function getPackages(Service $service)
+    {
+        $group = Auth::user()->group;
+        $package_ids = explode(",", $group->package_ids);
+        $service_ids = Package::whereIn('id', $package_ids)->distinct()->pluck('service_id');
+        $packages = Package::where(['status' => 'ACTIVE', "service_id" => $service->id, "packages.packagetype" => "DEFAULT"])->whereIn('id', $package_ids)->orderBy('position')->get();
+
+        if (Auth::check()) {
+            $userPackagePrices = UserPackagePrice::where(['user_id' => Auth::user()->id])->pluck('price_per_item', 'package_id')->toArray();
+
+            foreach ($packages as $package) {
+                if (isset($userPackagePrices[$package->id])) {
+                    $package->price_per_item = number_format(($userPackagePrices[$package->id] / 100) * $group->price_percentage, 2);
+                }
+            }
+
+            $userPackagePrices = NULL;
+        }
+
+        return (object) [
+            'packages' => $packages,
+            'userPackagePrices' => $userPackagePrices,
+            // 'favorite_pkgs'
+        ];
+    }
+endif;
+
+if (!function_exists('getRefill')) :
+    function getRefill(Order $order)
+    {
+        $order = Order::findorfail('159');
+        if ($order->status == strtoupper('completed') && ($order->package->refillbtn == 1)) {
+            // Get Not completed
+            $getNotCompleted = $order->refillRequests()
+                ->where(function ($query) {
+                    $query->where('status', '=', strtoupper('pending'))
+                        ->orWhere('status', '=', strtoupper('in progress'));
+                })
+                ->count();
+            // Refill  and order day difference
+            $orderCreated = Carbon::parse($order->created_at);
+            $now = Carbon::now();
+            $timeDifference = $orderCreated->diffInDays($now);
+            // Text condition
+            if ($timeDifference <= $order->package->refillPeriod && $getNotCompleted == 0) {
+                return $order->refillRequests->count() < $order->package->refill_time ? true : false;
+            }
+            return false;
+        }
+        return false;
+    }
+endif;
 
 if (!function_exists('formatTime')) :
     function formatTime($format, $date)
@@ -193,7 +275,7 @@ if (!function_exists("fundChange")) {
     function fundChange($text, $price, $type, $userid, $orderid)
 
     {
-        $user = \App\User::findOrFail($userid);
+        $user = User::findOrFail($userid);
         $userf = $user->funds;
         $pricebefore = $userf - ($price);
         $priceafter = $userf;
@@ -222,7 +304,7 @@ if (!function_exists("fundChange")) {
             $price = - ($price);
             $reason = 'Admin Changed Fund';
         }
-        \App\FundChange::create(['details' => $text, 'user_id' => $userid, 'pricebefore' => $pricebefore, 'priceafter' => $priceafter, 'reason' => $reason, 'amount' => $price]);
+        FundChange::create(['details' => $text, 'user_id' => $userid, 'pricebefore' => $pricebefore, 'priceafter' => $priceafter, 'reason' => $reason, 'amount' => $price]);
     }
 }
 if (!function_exists('convertCurrency')) :

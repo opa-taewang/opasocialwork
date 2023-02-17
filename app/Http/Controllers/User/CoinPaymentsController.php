@@ -10,6 +10,11 @@ session_start();
 
 class CoinPaymentsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     private $url = "https://www.coinpayments.net/index.php?";
     private $merchantId = "";
     private $secretKey = "";

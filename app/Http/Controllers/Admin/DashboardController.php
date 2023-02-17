@@ -24,9 +24,9 @@ class DashboardController extends Controller
         $date = \Carbon\Carbon::today()->subDays(30);
         $ttotalSell = \App\Order::whereIn("status", array("COMPLETED", "PARTIAL"))->where('created_at', '>=', $date)->sum("price");
         $totalUserfunds = \App\User::where("id", "<>", \Illuminate\Support\Facades\Auth::user()->id)->where('last_login', '>=', $date)->sum("funds");
-        $supportTicketOpen = \App\Ticket::where(array("status" => "OPEN"))->count();
+        $supportTicketOpen = \App\Models\Ticket::where(array("status" => "OPEN"))->count();
         $unreadMessages = \App\TicketMessage::where(array("is_read" => 0))->whereNotIn("user_id", array(\Illuminate\Support\Facades\Auth::user()->id))->count();
-        $tktcnt = \App\Ticket::where(['is_read' => 0])->count();
+        $tktcnt = \App\Models\Ticket::where(['is_read' => 0])->count();
         $msgcnt = \App\TicketMessage::where(['is_read' => 0])->whereNotIn('user_id', [auth()->user()->id])->count();
         $msgcnt += $tktcnt;
         $orderprice = \App\Order::sum('price');
@@ -54,9 +54,9 @@ class DashboardController extends Controller
         $date = \Carbon\Carbon::today()->subDays(30);
         $totalUserfunds = \App\User::where("id", "<>", \Illuminate\Support\Facades\Auth::user()->id)->where('last_login', '>=', $date)->sum("funds");
         $ttotalSell = \App\Order::whereIn("status", array("COMPLETED", "PARTIAL"))->where('created_at', '>=', $date)->sum("price");
-        $supportTicketOpen = \App\Ticket::where(array("status" => "OPEN"))->count();
+        $supportTicketOpen = \App\Models\Ticket::where(array("status" => "OPEN"))->count();
         $unreadMessages = \App\TicketMessage::where(array("is_read" => 0))->whereNotIn("user_id", array(\Illuminate\Support\Facades\Auth::user()->id))->count();
-        $tktcnt = \App\Ticket::where(['is_read' => 0])->count();
+        $tktcnt = \App\Models\Ticket::where(['is_read' => 0])->count();
         $msgcnt = \App\TicketMessage::where(['is_read' => 0])->whereNotIn('user_id', [auth()->user()->id])->count();
         $msgcnt += $tktcnt;
         $orderprice = \App\Order::sum('price');

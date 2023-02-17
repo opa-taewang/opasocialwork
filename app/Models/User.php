@@ -27,7 +27,7 @@ class User extends Authenticatable
         'funds',
         'role',
         'status',
-        // 'skype_id',
+        'favorite_pkgs',
         'enabled_payment_methods',
         'api_token',
         'last_login',

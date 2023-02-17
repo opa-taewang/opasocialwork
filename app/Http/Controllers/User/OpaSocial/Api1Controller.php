@@ -10,8 +10,16 @@ use Carbon;
 
 class Api1Controller extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index(\Illuminate\Http\Request $request)
     {
+
+
         $validator = \Validator::make($request->all(), array("action" => "required"));
         if ($validator->fails()) {
             $response["errors"] = $validator->errors()->all();

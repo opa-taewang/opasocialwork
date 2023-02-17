@@ -182,6 +182,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         App\Providers\GlobalFunctionsServiceProvider::class, //Add global functions service provider
+        Yoeunes\Toastr\ToastrServiceProvider::class, //Toastr
 
         /*
          * Package Service Providers...

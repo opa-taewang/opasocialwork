@@ -8,6 +8,11 @@ class ApiController extends Controller
 {
     public function index(\Illuminate\Http\Request $request)
     {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
         $validator = \Validator::make($request->all(), array("action" => "required"));
         if ($validator->fails()) {
             $response["errors"] = $validator->errors()->all();

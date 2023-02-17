@@ -24,7 +24,7 @@ class SupportController extends Controller
     public function indexData()
     {
 
-        $tickets = \App\Ticket::with('user');
+        $tickets = \App\Models\Ticket::with('user');
         return datatables()->of($tickets)->addColumn('param', function ($ticket) {
             if (!empty($ticket->orderid)) {
                 return $ticket->orderid;
@@ -48,7 +48,7 @@ class SupportController extends Controller
 
     public function show($id)
     {
-        $ticket = \App\Ticket::findOrFail($id);
+        $ticket = \App\Models\Ticket::findOrFail($id);
         $ticket->update(['is_read' => 1]);
         $ticketMessages = $ticket->messages;
 
@@ -65,18 +65,18 @@ class SupportController extends Controller
 
     public function edit($id)
     {
-        $ticket = \App\Ticket::findOrFail($id);
+        $ticket = \App\Models\Ticket::findOrFail($id);
         return view('admin.support.ticket.edit', compact('ticket'));
     }
     public function close($id)
     {
-        $ticket = \App\Ticket::where(['id' => $id])->update(['status' => 'CLOSED']);
+        $ticket = \App\Models\Ticket::where(['id' => $id])->update(['status' => 'CLOSED']);
         return redirect('/admin/support/tickets');
     }
     public function update(\Illuminate\Http\Request $request, $id)
     {
         $this->validate($request, ['message' => 'required']);
-        \App\Ticket::where(['id' => $id])->update(['message' => $request->input('message'), 'status' => $request->input('status')]);
+        \App\Models\Ticket::where(['id' => $id])->update(['message' => $request->input('message'), 'status' => $request->input('status')]);
         \Illuminate\Support\Facades\Session::flash('alert', __('messages.updated'));
         \Illuminate\Support\Facades\Session::flash('alertClass', 'success');
         return redirect('/admin/support/tickets/' . $id . '/edit');
@@ -84,7 +84,7 @@ class SupportController extends Controller
 
     public function destroy($id)
     {
-        $ticket = \App\Ticket::findOrFail($id);
+        $ticket = \App\Models\Ticket::findOrFail($id);
         $ticket->delete();
         \Illuminate\Support\Facades\Session::flash('alert', __('messages.deleted'));
         \Illuminate\Support\Facades\Session::flash('alertClass', 'success');
@@ -94,7 +94,7 @@ class SupportController extends Controller
     public function message(\Illuminate\Http\Request $request, $id)
     {
         if ($request->input('send') == 'reopen') {
-            \App\Ticket::where(['id' => $id])->update(['status' => 'OPEN']);
+            \App\Models\Ticket::where(['id' => $id])->update(['status' => 'OPEN']);
             \Illuminate\Support\Facades\Session::flash('alert', 'Ticket Reopened');
             \Illuminate\Support\Facades\Session::flash('alertClass', 'success');
             return redirect('/admin/support/tickets/' . $id);
@@ -106,11 +106,11 @@ class SupportController extends Controller
             }
 
             \App\TicketMessage::create(['content' => $request->input('content'), 'ticket_id' => $id, 'user_id' => \Illuminate\Support\Facades\Auth::user()->id]);
-            \App\Ticket::where(['id' => $id])->update(['updated_at' => \Carbon\Carbon::now(), 'status' => 'ANSWERED']);
+            \App\Models\Ticket::where(['id' => $id])->update(['updated_at' => \Carbon\Carbon::now(), 'status' => 'ANSWERED']);
         }
 
         if ($request->input('send') != 'send') {
-            \App\Ticket::where(['id' => $id])->update(['status' => 'CLOSED']);
+            \App\Models\Ticket::where(['id' => $id])->update(['status' => 'CLOSED']);
             \Illuminate\Support\Facades\Session::flash('alert', 'Ticket Closed');
             \Illuminate\Support\Facades\Session::flash('alertClass', 'success');
         }
@@ -120,7 +120,7 @@ class SupportController extends Controller
 
     public function tickCount()
     { {
-            $tktcnt = \App\Ticket::where(['is_read' => 0])->count();
+            $tktcnt = \App\Models\Ticket::where(['is_read' => 0])->count();
             $msgcnt = \App\TicketMessage::where(['is_read' => 0])->whereNotIn('user_id', [auth()->user()->id])->count();
             $msgcnt += $tktcnt;
         }
@@ -138,7 +138,7 @@ class SupportController extends Controller
         if ($topic == "PremiumAccounts") {
             $topic = "PREMIUM ACCOUNTS";
         }
-        $tickets = \App\Ticket::with('user')->where(['subject' => $topic])->orWhere(['topic' => $topic]);
+        $tickets = \App\Models\Ticket::with('user')->where(['subject' => $topic])->orWhere(['topic' => $topic]);
         return datatables()->of($tickets)->addColumn('param', function ($ticket) {
             if (!empty($ticket->orderid)) {
                 return $ticket->orderid;
@@ -157,8 +157,8 @@ class SupportController extends Controller
 
     public function indexNFilterData($topic)
     {
-        $tickets = \App\Ticket::with('user')->whereNotIn('status', ['CLOSED'])->get();
-        $tBucket = \App\Ticket::where('status', 'NULLED')->get();
+        $tickets = \App\Models\Ticket::with('user')->whereNotIn('status', ['CLOSED'])->get();
+        $tBucket = \App\Models\Ticket::where('status', 'NULLED')->get();
         $admins = \App\User::where('role', 'ADMIN')->get();
 
         if ($topic == 'new') {
@@ -205,11 +205,11 @@ class SupportController extends Controller
                 }
             }
         } else if ($topic == 'open') {
-            $tBucket = \App\Ticket::with('user')->whereNotIn('status', ['CLOSED', 'ANSWERED'])->get();
+            $tBucket = \App\Models\Ticket::with('user')->whereNotIn('status', ['CLOSED', 'ANSWERED'])->get();
         } else if ($topic == 'all') {
-            $tBucket = \App\Ticket::with('user');
+            $tBucket = \App\Models\Ticket::with('user');
         } else if ($topic == 'admin') {
-            $tBucket = \App\Ticket::with('user')->whereNotIn('status', ['CLOSED'])->where(['assign_admin' => 1])->get();
+            $tBucket = \App\Models\Ticket::with('user')->whereNotIn('status', ['CLOSED'])->where(['assign_admin' => 1])->get();
         }
 
         return datatables()->of($tBucket)->addColumn('param', function ($ticket) {

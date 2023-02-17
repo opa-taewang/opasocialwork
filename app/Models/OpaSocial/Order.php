@@ -10,9 +10,10 @@ namespace App\Models\OpaSocial;
  */
 
 use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
-class Order extends \Illuminate\Database\Eloquent\Model
+class Order extends Model
 {
     protected $guarded = [];
     static public function boot()
@@ -56,6 +57,10 @@ class Order extends \Illuminate\Database\Eloquent\Model
         return $this->belongsTo(User::class);
     }
 
+    public function refillRequests()
+    {
+        return $this->hasMany(RefillRequest::class);
+    }
     // public function getStatusAttribute($status)
     // {
     //     return title_case($status);
@@ -63,12 +68,12 @@ class Order extends \Illuminate\Database\Eloquent\Model
 
     public function getCreatedAtAttribute($date)
     {
-        return is_null($date) ? '' : \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $date)->timezone(config('app.timezone'))->toDateTimeString();
+        return is_null($date) ? '' : Carbon::createFromFormat('Y-m-d H:i:s', $date)->timezone(config('app.timezone'))->toDateTimeString();
     }
 
     public function getUpdatedAtAttribute($date)
     {
-        return is_null($date) ? '' : \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $date)->timezone(config('app.timezone'))->toDateTimeString();
+        return is_null($date) ? '' : Carbon::createFromFormat('Y-m-d H:i:s', $date)->timezone(config('app.timezone'))->toDateTimeString();
     }
 
     public function orWhereIn($column, $values)
